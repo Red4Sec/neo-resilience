@@ -1,0 +1,211 @@
+version: '3.4'
+networks:
+  neo-net:
+    internal: true
+services:
+  node-1:
+    container_name: node-1
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet1.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-2:
+    container_name: node-2
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet2.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-3:
+    container_name: node-3
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet3.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-4:
+    container_name: node-4
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet4.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-5:
+    container_name: node-5
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet5.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-6:
+    container_name: node-6
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet6.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  node-7:
+    container_name: node-7
+    image: 'neo-node:latest'
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '10332:10332'
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.json:/opt/neo-cli/config.json
+      - ./wallets/wallet7.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net
+
+  txgen:
+    container_name: txgen
+    image: 'neo-txgen:latest'
+    env_file:
+     - ./node/txgen.env
+    tty: true
+    ports:
+      - '10333:10333'
+    volumes:
+      - ./configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./configs/config.txgen.json:/opt/neo-cli/config.json
+      - ./wallets/wallet0.json:/opt/neo-cli/wallet.json
+    healthcheck:
+      interval: 15s
+      retries: 9
+      start_period: 30s
+      test:
+        - CMD
+        - bash
+        - '-c'
+        - exec 6<>/dev/tcp/127.0.0.1/10333
+      timeout: 10s
+    networks:
+      - neo-net

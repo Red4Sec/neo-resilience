@@ -1,0 +1,13 @@
+2019/05/05-22:22:16.164122 7fb8e4faa740 Delete type=3 #1
+2019/05/06-05:08:31.213325 7fb7d7fff700 Level-0 table #5: started
+2019/05/06-05:08:31.305486 7fb7d7fff700 Level-0 table #5: 2391138 bytes OK
+2019/05/06-05:08:31.314574 7fb7d7fff700 Delete type=0 #3
+2019/05/06-12:04:55.006617 7fb7d7fff700 Level-0 table #7: started
+2019/05/06-12:04:55.034375 7fb7d7fff700 Level-0 table #7: 2353807 bytes OK
+2019/05/06-12:04:55.043633 7fb7d7fff700 Delete type=0 #4
+2019/05/06-12:09:43.985355 7fb7d7fff700 Compacting 1@1 + 1@2 files
+2019/05/06-12:09:44.103311 7fb7d7fff700 Generated table #8@1: 5838 keys, 1938257 bytes
+2019/05/06-12:09:44.103327 7fb7d7fff700 Compacted 1@1 + 1@2 files => 1938257 bytes
+2019/05/06-12:09:44.158506 7fb7d7fff700 compacted to: files[ 0 0 1 0 0 0 0 ]
+2019/05/06-12:09:44.158701 7fb7d7fff700 Delete type=2 #5
+2019/05/06-12:09:44.159214 7fb7d7fff700 Delete type=2 #7

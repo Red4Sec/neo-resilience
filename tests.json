@@ -1,0 +1,190 @@
+[
+    {
+        "name": "consensus",
+        "desc": "Runs the consensus in a perfect environment, without transactions or delays.",
+        "start-delay": 70,
+        "tx": false,
+        "phases":
+        [
+            {
+                "duration": 120,
+                "config": {}
+            }
+        ]
+    },
+    {
+        "name": "faulty-nodes",
+        "desc": "Simulates failure in two consensus nodes to test consensus tolerance, then restores failed nodes.",
+        "start-delay": 70,
+        "tx": false,
+        "phases":
+        [
+            {
+                "duration": 30,
+                "config": {
+                    "node-1": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-5": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-6": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+            {
+                "duration": 210,
+                "config": {
+                    "node-2": {
+                        "loss": 100,
+                        "corrupt": 100
+                    },
+                    "node-6": {
+                        "loss": 100,
+                        "corrupt": 100
+                    }
+                }
+            },
+            {
+                "duration": 240,
+                "config": {
+                    "node-2": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-6": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "name": "normal",
+        "desc": "Runs with normal network delays and volume of transactions.",
+        "start-delay": 70,
+        "tx": true,
+        "phases":
+        [
+            {
+                "duration": 120,
+                "config": {
+                    "node-1": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-5": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-6": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [50, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "name": "bad-network",
+        "desc": "Runs with many network failures and transaction.",
+        "start-delay": 70,
+        "tx": true,
+        "phases":
+        [
+            {
+                "duration": 300,
+                "config": {
+                    "node-1": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-2": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-3": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-4": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-5": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-6": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    },
+                    "node-7": {
+                        "delay": [200, 500],
+                        "loss": [20, 50],
+                        "corrupt": 15
+                    }
+                }
+            }
+        ]
+    }
+]
