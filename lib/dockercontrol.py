@@ -37,8 +37,9 @@ class DockerControl(object):
         self.neo_net_down()
         if output:
             p = subprocess.Popen(['docker-compose', 'up'], stderr=subprocess.STDOUT)
-            return p.pid != -1
-        return subprocess.call(['docker-compose', 'up', '-d']) != -1
+        else:
+            p = subprocess.Popen(['docker-compose', 'up', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        return p.pid != -1
 
 
     def node_exec(self, node_name, cmd):

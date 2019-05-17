@@ -86,17 +86,17 @@ for test in test_batch:
     print('     Phases: {}'.format(len(test['phases'])))
     print('     Duration: {}s'.format(sum(p['duration'] for p in test['phases'])))
     print('     Transactions: {}'.format(test['tx']))
-    print('[+] Starting net ...')
+    print('     Phases:')
 
     nodehelper.config_txgen(test['tx'])
     dc.neo_net_up(args.show_output)
 
-    print('[+] Network warm up {}s'.format(test['start-delay']))
+    print('        Network warm up - {}s'.format(test['start-delay']))
     sleep(test['start-delay'])
 
     first = True
     for phase in test['phases']:
-        print('     Phase {} - {}s'.format(test['phases'].index(phase)+1, phase['duration']))
+        print('        Phase {} - {}s'.format(test['phases'].index(phase)+1, phase['duration']))
         for p, v in phase['config'].items():
             nodehelper.config_node(dc, p, v, first)
 
@@ -105,7 +105,7 @@ for test in test_batch:
 
     batch.save_test_result(test)
     dc.neo_net_down()
-    print('[+] Generated blocks\n  {}'.format(batch.report.tests[test['name']]['blocks']))
+    print('     Generated blocks:\n        {}'.format(batch.report.tests[test['name']]['blocks']))
 
 print('[i] Save report {}'.format(batch.reportdir + '/report.json'))
 batch.save_report()
