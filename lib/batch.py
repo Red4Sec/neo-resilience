@@ -51,6 +51,9 @@ class Batch(object):
             blocks = nodehelper.get_node_height(self.dc, node) - initial_block_count
             self.report.tests[test['name']]['blocks'][node] = blocks
 
+            node_logs = os.path.join(testdir, node + '_logs.tar')
+            self.dc.copy2tar(node, '/opt/neo-cli/Logs', node_logs)
+
             node_stats = os.path.join(testdir, node + '_stats.json')
             self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
             with open(node_stats) as f:

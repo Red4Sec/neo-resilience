@@ -64,6 +64,15 @@ class DockerControl(object):
         stream.close()
 
 
+    def copy2tar(self, node_name, org, dst):
+        n = self.client.containers.get(node_name)
+        bits, _ = n.get_archive(org)
+
+        with open(dst, 'wb') as f:
+            for chunk in bits:
+                f.write(chunk)
+
+
     def __generator_to_stream(self, generator, buffer_size=io.DEFAULT_BUFFER_SIZE):
         class GeneratorStream(io.RawIOBase):
             def __init__(self):
