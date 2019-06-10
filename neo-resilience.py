@@ -11,6 +11,7 @@ import json
 import zipfile
 from time import sleep
 from os import path
+from shutil import copyfile
 from lib import dockercontrol
 from lib import nodehelper
 from lib import batch
@@ -50,6 +51,8 @@ if(args.custom_build):
     print('[+] Using custom neo-cli build')
     with zipfile.ZipFile(args.custom_build, 'r') as z:
         z.extractall('node/neo-cli')
+    
+    copyfile(args.custom_build, path.join(batch.reportdir, path.basename(args.custom_build)))
 
 else:
     if not any(['neo-build:latest' in i.tags for i in dc.client.images.list()]):
