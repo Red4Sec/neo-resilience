@@ -9,6 +9,8 @@
 import argparse
 import json
 import zipfile
+import signal
+import sys
 from time import sleep
 from os import path
 from shutil import copyfile
@@ -27,7 +29,15 @@ def show_banner():
     '''
     print(banner)
 
+
+def force_exit(signum, frame):
+    print('\n[!] Aborting...\n')
+    dc.neo_net_down()
+    sys.exit(0)
+
+
 show_banner()
+signal.signal(signal.SIGINT, force_exit)
 
 parser = argparse.ArgumentParser(description='Neo Resilience Test')
 parser.add_argument('-t', '--tests-file', type=str, default='tests.json', help='JSON tests file')
