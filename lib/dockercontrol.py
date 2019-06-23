@@ -16,17 +16,17 @@ class DockerControl(object):
 
 
     def run_builder(self, pr_neo=0, pr_cli=0, pr_vm=0, pr_plg=0, code_neo=False, code_vm=False):
-        path = {os.path.join(os.getcwd(),'node/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
+        path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
         args = '{} {} {} {} {} {}'.format(pr_neo, pr_cli, pr_vm, pr_plg, int(code_neo), int(code_vm))
         return self.client.containers.run('neo-build:latest', args, remove=True, volumes=path)
 
 
     def create_node_image(self):
-        return self.client.images.build(path='./node', rm=True, nocache=True, tag='neo-node')
+        return self.client.images.build(path='./nodes', rm=True, nocache=True, tag='neo-node')
 
 
     def create_txgen_image(self):
-        return self.client.images.build(path='./node', dockerfile='Dockerfile.txgen', rm=True, tag='neo-txgen')
+        return self.client.images.build(path='./nodes', dockerfile='Dockerfile.txgen', rm=True, tag='neo-txgen')
 
 
     def neo_net_down(self):
@@ -89,5 +89,5 @@ class DockerControl(object):
                     b[:len(output)] = output
                     return len(output)
                 except StopIteration:
-                    return 0 
+                    return 0
         return io.BufferedReader(GeneratorStream())

@@ -13,9 +13,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet1.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet1.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -39,9 +39,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet2.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet2.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -65,9 +65,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet3.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet3.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -91,9 +91,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet4.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet4.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -117,9 +117,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet5.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet5.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -143,9 +143,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet6.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet6.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -169,9 +169,9 @@ services:
       - '10332:10332'
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.json:/opt/neo-cli/config.json
-      - ./wallets/wallet7.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet7.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 3
@@ -189,14 +189,14 @@ services:
     container_name: txgen
     image: 'neo-txgen:latest'
     env_file:
-     - ./node/txgen.env
+     - ./nodes/txgen.env
     tty: true
     ports:
       - '10333:10333'
     volumes:
-      - ./configs/protocol.json:/opt/neo-cli/protocol.json
-      - ./configs/config.txgen.json:/opt/neo-cli/config.json
-      - ./wallets/wallet0.json:/opt/neo-cli/wallet.json
+      - ./nodes/configs/protocol.json:/opt/neo-cli/protocol.json
+      - ./nodes/configs/config.txgen.json:/opt/neo-cli/config.json
+      - ./nodes/wallets/wallet0.json:/opt/neo-cli/wallet.json
     healthcheck:
       interval: 15s
       retries: 9

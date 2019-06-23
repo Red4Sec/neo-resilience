@@ -23,7 +23,7 @@ def config_node(dc, node, values, new=True):
 
 
 def config_txgen(n):
-    with open('node/txgen.env', 'w') as f:
+    with open('nodes/txgen.env', 'w') as f:
         f.write('NEO_TX_RUN={}\n'.format(n))
 
 

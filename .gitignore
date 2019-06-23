@@ -445,5 +445,5 @@ MigrationBackup/
 
 # Custom
 output/
-node/neo-cli/
+nodes/neo-cli/
 *.env

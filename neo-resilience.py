@@ -60,8 +60,8 @@ print('[i] Batch ID: {}'.format(batch.id))
 if(args.custom_build):
     print('[+] Using custom neo-cli build')
     with zipfile.ZipFile(args.custom_build, 'r') as z:
-        z.extractall('node/neo-cli')
-    
+        z.extractall('nodes/neo-cli')
+
     copyfile(args.custom_build, path.join(batch.reportdir, path.basename(args.custom_build)))
 
 else:
@@ -75,7 +75,7 @@ else:
     buildlog = dc.run_builder(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_plg, args.code_neo, args.code_vm)
     batch.savelog(buildlog)
 
-    if not path.exists('node/neo-cli/neo-cli.dll'):
+    if not path.exists('nodes/neo-cli/neo-cli.dll'):
         print('[!] Build failed. check {}'.format(batch.buildlog))
         exit(1)
 
