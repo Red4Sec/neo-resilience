@@ -447,3 +447,4 @@ MigrationBackup/
 output/
 nodes/neo-cli/
 *.env
+build/*\.xml

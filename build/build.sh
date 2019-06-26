@@ -38,6 +38,14 @@ if [[ $6 -ne 0 ]]; then
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
+# Analysis
+if [[ -f "/analysis.xml" ]]; then
+    dotnet tool install --global dotnet-sonarscanner
+    dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
+    dotnet build /src/neo-cli/neo-cli.sln -r ubuntu.16.04-x64
+    dotnet-sonarscanner end
+fi
+
 # Build
 dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubuntu.16.04-x64
 dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
