@@ -80,6 +80,7 @@ else:
         dc.create_builder()
 
     print('[+] Building neo-cli')
+    print('     Branch: neo {}, neo-cli {}, neo-vm {}, plugins {}'.format(args.branch_neo, args.branch_cli, args.branch_vm, args.branch_plg))
     print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, plugins {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_plg))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
     buildlog = dc.run_builder(args)

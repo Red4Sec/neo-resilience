@@ -31,7 +31,7 @@ class DockerControl(object):
 
         path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
         #args = '{} {} {} {} {} {}'.format(pr_neo, pr_cli, pr_vm, pr_plg, int(code_neo), int(code_vm))
-        return self.client.containers.run('neo-build:latest', args, remove=True, volumes=path)
+        return self.client.containers.run('neo-build:latest', build_arguments, remove=True, volumes=path)
 
 
     def create_node_image(self):
