@@ -15,9 +15,22 @@ class DockerControl(object):
         return self.client.images.build(path='./build', rm=True, tag='neo-build')
 
 
-    def run_builder(self, pr_neo=0, pr_cli=0, pr_vm=0, pr_plg=0, code_neo=False, code_vm=False):
+    def run_builder(self, args):
+        # TODO: fix this mess
+        build_arguments = ''
+        if (args.branch_neo): build_arguments += ' -n {}'.format(args.branch_neo)
+        if (args.branch_cli): build_arguments += ' -c {}'.format(args.branch_cli)
+        if (args.branch_vm): build_arguments += ' -v {}'.format(args.branch_vm)
+        if (args.branch_plg): build_arguments += ' -p {}'.format(args.branch_plg)
+        if (args.pr_neo): build_arguments += ' -o {}'.format(args.pr_neo)
+        if (args.pr_cli): build_arguments += ' -i {}'.format(args.pr_cli)
+        if (args.pr_vm): build_arguments += ' -m {}'.format(args.pr_vm)
+        if (args.pr_plg): build_arguments += ' -g {}'.format(args.pr_plg)
+        if (args.code_neo): build_arguments += ' -a'
+        if (args.code_vm): build_arguments += ' -b'
+
         path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
-        args = '{} {} {} {} {} {}'.format(pr_neo, pr_cli, pr_vm, pr_plg, int(code_neo), int(code_vm))
+        #args = '{} {} {} {} {} {}'.format(pr_neo, pr_cli, pr_vm, pr_plg, int(code_neo), int(code_vm))
         return self.client.containers.run('neo-build:latest', args, remove=True, volumes=path)
 
 

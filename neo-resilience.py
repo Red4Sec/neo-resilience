@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Neo Resilience
-# Version: 0.2
+# Version: 0.3.1
 # https://github.com/red4sec/neo-resilience
 
 
@@ -39,16 +39,26 @@ def force_exit(signum, frame):
 show_banner()
 signal.signal(signal.SIGINT, force_exit)
 
-parser = argparse.ArgumentParser(description='Neo Resilience Test')
+parser = argparse.ArgumentParser(description='neo-resilience - operational testing platform')
+
 parser.add_argument('-t', '--tests-file', type=str, default='tests.json', help='JSON tests file')
 parser.add_argument('-c', '--custom-build', type=str, help='ZIP neo-cli')
-parser.add_argument('--pr-neo', type=int, default=0, help='Select a specific neo pull request')
-parser.add_argument('--pr-cli', type=int, default=0, help='Select a specific neo-cli pull request')
-parser.add_argument('--pr-vm', type=int, default=0, help='Select a specific neo-vm pull request')
-parser.add_argument('--pr-plg', type=int, default=0, help='Select a specific neo plugins pull request')
+
+parser.add_argument('--branch-neo', type=str, default='master', help='Use a specific neo branch')
+parser.add_argument('--branch-cli', type=str, default='master', help='Use a specific neo-cli branch')
+parser.add_argument('--branch-vm', type=str, default='master', help='Use a specific neo-vm branch')
+parser.add_argument('--branch-plg', type=str, default='master', help='Use a specific plugins branch')
+
+parser.add_argument('--pr-neo', type=int, default=0, help='Use a specific neo pull request')
+parser.add_argument('--pr-cli', type=int, default=0, help='Use a specific neo-cli pull request')
+parser.add_argument('--pr-vm', type=int, default=0, help='Use a specific neo-vm pull request')
+parser.add_argument('--pr-plg', type=int, default=0, help='Use a specific neo plugins pull request')
+
 parser.add_argument('--code-neo', action='store_true', help='Build using github neo code as reference')
 parser.add_argument('--code-vm', action='store_true', help='Build using github neo-vm code as reference')
+
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
+
 args = parser.parse_args()
 
 
@@ -72,7 +82,7 @@ else:
     print('[+] Building neo-cli')
     print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, plugins {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_plg))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
-    buildlog = dc.run_builder(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_plg, args.code_neo, args.code_vm)
+    buildlog = dc.run_builder(args)
     batch.savelog(buildlog)
 
     if not path.exists('nodes/neo-cli/neo-cli.dll'):

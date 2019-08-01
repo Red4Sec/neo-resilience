@@ -1,7 +1,7 @@
 [
     {
         "name": "consensus",
-        "desc": "Runs the consensus in a perfect environment, without transactions or delays.",
+        "desc": "Consensus in a perfect environment, without transactions or delays.",
         "start-delay": 70,
         "tx": false,
         "phases":

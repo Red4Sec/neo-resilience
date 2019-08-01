@@ -1,38 +1,79 @@
 #!/bin/bash
 
-# Repos
-NEO=https://github.com/neo-project/neo
-NEO_CLI=https://github.com/neo-project/neo-cli
-NEO_VM=https://github.com/neo-project/neo-vm
-NEO_PLUGINS=https://github.com/neo-project/neo-plugins
+# Params
+SOURCE_NEO=https://github.com/neo-project/neo
+SOURCE_CLI=https://github.com/neo-project/neo-cli
+SOURCE_VM=https://github.com/neo-project/neo-vm
+SOURCE_PLG=https://github.com/neo-project/neo-plugins
+BRANCH_NEO=master
+BRANCH_CLI=master
+BRANCH_PLG=master
+BRANCH_VM=master
+PR_NEO=0
+PR_CLI=0
+PR_PLG=0
+PR_VM=0
+
+# TODO: getopt long arguments
+while getopts n:c:p:v:o:i:g:m:a,b option; do
+    case "${option}" in
+        n) BRANCH_NEO=${OPTARG};;
+        c) BRANCH_CLI=${OPTARG};;
+        p) BRANCH_PLG=${OPTARG};;
+        v) BRANCH_VM=${OPTARG};;
+        o) PR_NEO=${OPTARG};;
+        i) PR_CLI=${OPTARG};;
+        g) PR_PLG=${OPTARG};;
+        m) PR_VM=${OPTARG};;
+        a) CODE_NEO=1;;
+        b) CODE_VM=1;;
+    esac
+done
 
 # Source dirs
 rm -rf /src /build/neo-cli/*
 mkdir /src
 
-# Clone repos
-git clone $NEO /src/neo
-git clone $NEO_CLI /src/neo-cli
-git clone $NEO_VM /src/neo-vm
-git clone $NEO_PLUGINS /src/neo-plugins
+# TODO: Info header
+#echo NEO:$1 CLI:$2 VM:$3 PLG:$4 NEO-CODE:$5 VM-CODE:$6
 
-# Info header
-echo NEO:$1 CLI:$2 VM:$3 PLG:$4 NEO-CODE:$5 VM-CODE:$6
+# neo-cli
+git clone --single-branch --branch $BRANCH_CLI $SOURCE_CLI /src/neo-cli
+if [[ $PR_CLI -ne 0 ]]; then
+    cd /src/neo-cli
+    git fetch origin refs/pull/$PR_CLI/head:pr_$PR_CLI
+    git checkout pr_$PR_CLI
+fi
 
-# Pull Requests
-if [[ $1 -ne 0 ]] ; then (cd /src/neo && git fetch origin refs/pull/$1/head:pr_$1 && git checkout pr_$1); fi
-if [[ $2 -ne 0 ]] ; then (cd /src/neo-cli && git fetch origin refs/pull/$2/head:pr_$2 && git checkout pr_$2); fi
-if [[ $3 -ne 0 ]] ; then (cd /src/neo-vm && git fetch origin refs/pull/$3/head:pr_$3 && git checkout pr_$3); fi
-if [[ $4 -ne 0 ]] ; then (cd /src/neo-plugins && git fetch origin refs/pull/$4/head:pr_$4 && git checkout pr_$4); fi
+# neo-plugins
+#git clone --single-branch --branch $BRANCH_PLG $SOURCE_PLG /src/neo-plugins
+#if [[ $PR_PLG -ne 0 ]]; then
+#    cd /src/neo-plugins
+#    git fetch origin refs/pull/$PR_PLG/head:pr_$PR_PLG
+#    git checkout pr_$PR_PLG
+#fi
 
-# References
-if [[ $5 -ne 0 ]]; then
+# neo-core
+if [[ $PR_NEO -ne 0 || $CODE_NEO -eq 1  || $CODE_VM -eq 1 || $BRANCH_NEO != "master" || $PR_VM -ne 0 ]]; then
+    git clone --single-branch --branch $BRANCH_NEO $SOURCE_NEO /src/neo
+    if [[ $PR_NEO -ne 0 ]]; then
+        cd /src/neo
+        git fetch origin refs/pull/$PR_NEO/head:pr_$PR_NEO
+        git checkout pr_$PR_NEO
+    fi
     dotnet remove /src/neo-cli/neo-cli/neo-cli.csproj package neo
     dotnet sln /src/neo-cli/neo-cli.sln add /src/neo/neo/neo.csproj
     dotnet add /src/neo-cli/neo-cli/neo-cli.csproj reference /src/neo/neo/neo.csproj
 fi
 
-if [[ $6 -ne 0 ]]; then
+# neo-vm
+if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
+    git clone --single-branch --branch $BRANCH_VM $SOURCE_VM /src/neo-vm
+    if [[ $PR_VM -ne 0 ]]; then
+        cd /src/neo-vm
+        git fetch origin refs/pull/$PR_VM/head:pr_$PR_VM
+        git checkout pr_$PR_VM
+    fi
     dotnet remove /src/neo/neo/neo.csproj package neo.vm
     dotnet sln /src/neo/neo.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
@@ -40,6 +81,7 @@ fi
 
 # Analysis
 if [[ -f "/analysis.xml" ]]; then
+    cd /
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
     dotnet build /src/neo-cli/neo-cli.sln -r ubuntu.16.04-x64
@@ -48,9 +90,9 @@ fi
 
 # Build
 dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubuntu.16.04-x64
-dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
+#dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
 
 # Output binaries
 mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
-mkdir /build/neo-cli/Plugins
-mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins
+#mkdir /build/neo-cli/Plugins
+#mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins

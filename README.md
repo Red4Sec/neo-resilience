@@ -1,6 +1,12 @@
 # Neo-Resilience
 Perform resistance and performance tests for specific NEO builds. It comes with four predefined tests: consensus, faulty-nodes, normal, bad-network.
 
+# NEO 3.0 dev TODO
+- NeoStats Plugin.
+- Save stats and consensus logs.
+- Generate a 3.0 chain.
+- Wallet txgen.
+
 ## Features
 - Build NEO from the Github code or from the custom compilation.
 - Allows selection of specific pull request.

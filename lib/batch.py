@@ -52,12 +52,12 @@ class Batch(object):
             self.report.tests[test['name']]['blocks'][node] = blocks
 
             node_logs = os.path.join(testdir, node + '_logs.tar')
-            self.dc.copy2tar(node, '/opt/neo-cli/Logs', node_logs)
+            #self.dc.copy2tar(node, '/opt/neo-cli/Logs', node_logs)
 
             node_stats = os.path.join(testdir, node + '_stats.json')
-            self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
-            with open(node_stats) as f:
-                self.report.tests[test['name']]['stats'][node] = json.load(f)
+            #self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
+            #with open(node_stats) as f:
+            #    self.report.tests[test['name']]['stats'][node] = json.load(f)
 
 
     def get_report(self):
@@ -78,6 +78,10 @@ class Report(object):
         self.date = str(datetime.now())
         self.tests = {}
         self.buildoptions = {
+            'branch_neo': args.branch_neo,
+            'branch_cli': args.branch_cli,
+            'branch_vm': args.branch_vm,
+            'branch_plg': args.branch_plg,
             'pr_neo': args.pr_neo,
             'pr_cli': args.pr_cli,
             'pr_vm': args.pr_vm,
