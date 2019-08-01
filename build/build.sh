@@ -34,7 +34,7 @@ done
 rm -rf /src /build/neo-cli/*
 mkdir /src
 
-# TODO: Info header
+# Info header
 #echo NEO:$1 CLI:$2 VM:$3 PLG:$4 NEO-CODE:$5 VM-CODE:$6
 
 # neo-cli
@@ -96,3 +96,4 @@ dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubun
 mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
 #mkdir /build/neo-cli/Plugins
 #mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins
+
