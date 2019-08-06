@@ -3,28 +3,32 @@
 # Params
 SOURCE_NEO=https://github.com/neo-project/neo
 SOURCE_CLI=https://github.com/neo-project/neo-cli
-SOURCE_VM=https://github.com/neo-project/neo-vm
 SOURCE_PLG=https://github.com/neo-project/neo-plugins
+SOURCE_VM=https://github.com/neo-project/neo-vm
 BRANCH_NEO=master
 BRANCH_CLI=master
-BRANCH_PLG=master
 BRANCH_VM=master
+BRANCH_PLG=master
 PR_NEO=0
 PR_CLI=0
-PR_PLG=0
 PR_VM=0
+PR_PLG=0
 
 # TODO: getopt long arguments
-while getopts n:c:p:v:o:i:g:m:a,b option; do
+while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b option; do
     case "${option}" in
+        w) SOURCE_NEO=${OPTARG};;
+        x) SOURCE_CLI=${OPTARG};;
+        y) SOURCE_VM=${OPTARG};;
+        z) SOURCE_PLG=${OPTARG};;
         n) BRANCH_NEO=${OPTARG};;
         c) BRANCH_CLI=${OPTARG};;
-        p) BRANCH_PLG=${OPTARG};;
         v) BRANCH_VM=${OPTARG};;
+        p) BRANCH_PLG=${OPTARG};;
         o) PR_NEO=${OPTARG};;
         i) PR_CLI=${OPTARG};;
-        g) PR_PLG=${OPTARG};;
         m) PR_VM=${OPTARG};;
+        g) PR_PLG=${OPTARG};;
         a) CODE_NEO=1;;
         b) CODE_VM=1;;
     esac

@@ -44,6 +44,11 @@ parser = argparse.ArgumentParser(description='neo-resilience - operational testi
 parser.add_argument('-t', '--tests-file', type=str, default='tests.json', help='JSON tests file')
 parser.add_argument('-c', '--custom-build', type=str, help='ZIP neo-cli')
 
+parser.add_argument('--source-neo', type=str, help='Use a specific neo repo')
+parser.add_argument('--source-cli', type=str, help='Use a specific neo-cli repo')
+parser.add_argument('--source-vm', type=str, help='Use a specific neo-vm repo')
+parser.add_argument('--source-plg', type=str, help='Use a specific plugins repo')
+
 parser.add_argument('--branch-neo', type=str, default='master', help='Use a specific neo branch')
 parser.add_argument('--branch-cli', type=str, default='master', help='Use a specific neo-cli branch')
 parser.add_argument('--branch-vm', type=str, default='master', help='Use a specific neo-vm branch')
