@@ -62,6 +62,8 @@ parser.add_argument('--pr-plg', type=int, default=0, help='Use a specific neo pl
 parser.add_argument('--code-neo', action='store_true', help='Build using github neo code as reference')
 parser.add_argument('--code-vm', action='store_true', help='Build using github neo-vm code as reference')
 
+parser.add_argument('--doc', action='store_true', help='Generate code documentation')
+
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
 
 args = parser.parse_args()

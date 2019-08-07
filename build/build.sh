@@ -31,6 +31,7 @@ while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b option; do
         g) PR_PLG=${OPTARG};;
         a) CODE_NEO=1;;
         b) CODE_VM=1;;
+        d) DOC_GEN=1;;
     esac
 done
 
@@ -81,6 +82,11 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
     dotnet remove /src/neo/neo/neo.csproj package neo.vm
     dotnet sln /src/neo/neo.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
+fi
+
+# Documentation
+if [[ $DOC_GEN -eq 1 ]]
+    doxygen /doc.config
 fi
 
 # Analysis

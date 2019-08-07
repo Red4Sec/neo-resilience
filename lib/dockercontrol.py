@@ -16,6 +16,8 @@ class DockerControl(object):
 
 
     def run_builder(self, args):
+        path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
+
         # TODO: fix this mess
         build_arguments = ''
         if (args.source_neo): build_arguments += ' -w {}'.format(args.source_neo)
@@ -32,9 +34,10 @@ class DockerControl(object):
         if (args.pr_plg): build_arguments += ' -g {}'.format(args.pr_plg)
         if (args.code_neo): build_arguments += ' -a'
         if (args.code_vm): build_arguments += ' -b'
+        if (args.doc):
+            build_arguments += ' -d'
+            path[os.path.join(os.getcwd(),'output/neo3-doc'] = {'bind': '/doc', 'mode': 'rw'}
 
-        path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
-        #args = '{} {} {} {} {} {}'.format(pr_neo, pr_cli, pr_vm, pr_plg, int(code_neo), int(code_vm))
         return self.client.containers.run('neo-build:latest', build_arguments, remove=True, volumes=path)
 
 
