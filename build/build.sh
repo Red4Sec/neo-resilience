@@ -15,7 +15,7 @@ PR_VM=0
 PR_PLG=0
 
 # TODO: getopt long arguments
-while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b option; do
+while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d option; do
     case "${option}" in
         w) SOURCE_NEO=${OPTARG};;
         x) SOURCE_CLI=${OPTARG};;
@@ -85,7 +85,7 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
 fi
 
 # Documentation
-if [[ $DOC_GEN -eq 1 ]]
+if [[ $DOC_GEN -eq 1 ]]; then
     doxygen /doc.config
 fi
 

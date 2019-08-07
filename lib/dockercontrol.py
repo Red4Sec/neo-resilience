@@ -36,7 +36,7 @@ class DockerControl(object):
         if (args.code_vm): build_arguments += ' -b'
         if (args.doc):
             build_arguments += ' -d'
-            path[os.path.join(os.getcwd(),'output/neo3-doc'] = {'bind': '/doc', 'mode': 'rw'}
+            path[os.path.join(os.getcwd(),'output/neo3-doc')] = {'bind': '/doc', 'mode': 'rw'}
 
         return self.client.containers.run('neo-build:latest', build_arguments, remove=True, volumes=path)
 
