@@ -2,8 +2,7 @@
   "ProtocolConfiguration": {
     "Magic": 11452115,
     "AddressVersion": 23,
-    "SecondsPerBlock": 15,
-    "LowPriorityThreshold": 0.001,
+    "MillisecondsPerBlock": 1500,
     "StandbyValidators": [
       "020dda08407ee4f8f88dc13bdbaff77d49f176012071311797e0ff04d9a85755a2",
       "0209be2d8c0c330ad935e8b9e0717762d5d240044db6a12ece8134e91634c9c9af",
@@ -21,12 +20,6 @@
       "node-5:10333",
       "node-6:10333",
       "node-7:10333"
-    ],
-    "SystemFee": {
-      "EnrollmentTransaction": 1000,
-      "IssueTransaction": 500,
-      "PublishTransaction": 500,
-      "RegisterTransaction": 10000
-    }
+    ]
   }
 }
