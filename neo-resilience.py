@@ -32,6 +32,7 @@ def show_banner():
 
 def force_exit(signum, frame):
     print('\n[!] Aborting...\n')
+    dc.stop_interactive()
     dc.neo_net_down()
     sys.exit(0)
 
@@ -67,9 +68,12 @@ parser.add_argument('--doc', action='store_true', help='Generate code documentat
 parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
+parser.add_argument('-i','--interactive-node', action='store_true', help='Run an interactive node')
 
 args = parser.parse_args()
 
+if args.interactive_node:
+    args.show_output = False
 
 dc = dockercontrol.DockerControl()
 batch = batch.Batch(dc, args)
@@ -127,6 +131,9 @@ for test in test_batch:
     print('        Network warm up - {}s'.format(test['start-delay']))
     sleep(test['start-delay'])
 
+    print('[i] Launching interactive...\n')
+    dc.start_interactive()
+
     first = True
     for phase in test['phases']:
         print('        Phase {} - {}s'.format(test['phases'].index(phase)+1, phase['duration']))
@@ -137,6 +144,7 @@ for test in test_batch:
         first = False
 
     batch.save_test_result(test)
+    dc.stop_interactive()
     dc.neo_net_down()
     print('     Generated blocks:\n        {}'.format(batch.report.tests[test['name']]['blocks']))
     print('     Pass: {}'.format(batch.report.tests[test['name']]['result']))

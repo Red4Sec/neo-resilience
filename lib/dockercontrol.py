@@ -58,6 +58,18 @@ class DockerControl(object):
             quit()
 
 
+    def start_interactive(self):
+        path = {os.path.join(os.getcwd(),'nodes/tmp'): {'bind': '/node-tmp', 'mode': 'rw'}}
+        self.client.containers.run('neo-node','sleep 1d', entrypoint=['/bin/sh','-c'], remove=True, detach=True, name='node-interactive', auto_remove=True, network='neo-resilience_neo-net', privileged=True, volumes=path)
+        #self.client.containers.run('ubuntu:18.04','sleep 1d', remove=True, detach=True, name='node-interactive', auto_remove=True, network='neo-resilience_neo-net', privileged=True, volumes=path)
+        return subprocess.Popen(['docker', 'exec', '-it', 'node-interactive', 'bash'], stderr=subprocess.STDOUT, start_new_session=True)
+
+
+    def stop_interactive(self):
+        i = self.client.containers.get('node-interactive')
+        return i.kill()
+
+
     def neo_net_down(self):
         return subprocess.Popen(['docker-compose', 'down'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT).wait()
 
