@@ -39,8 +39,28 @@ done
 rm -rf /src /build/neo-cli/*
 mkdir /src
 
-# Info header
-#echo NEO:$1 CLI:$2 VM:$3 PLG:$4 NEO-CODE:$5 VM-CODE:$6
+# Header
+echo "--------------------------------------------------------"
+echo "   SETTINGS "
+echo "--------------------------------------------------------"
+echo "SOURCE_NEO=$SOURCE_NEO"
+echo "SOURCE_CLI=$SOURCE_CLI"
+echo "SOURCE_VM=$SOURCE_VM"
+echo "SOURCE_PLG=$SOURCE_PLG"
+echo "BRANCH_NEO=$BRANCH_NEO"
+echo "BRANCH_CLI=$BRANCH_CLI"
+echo "BRANCH_VM=$BRANCH_VM"
+echo "BRANCH_PLG=$BRANCH_PLG"
+echo "PR_NEO=$PR_NEO"
+echo "PR_CLI=$PR_CLI"
+echo "PR_VM=$PR_VM"
+echo "PR_PLG=$PR_PLG"
+echo "CODE_NEO=$CODE_NEO"
+echo "CODE_VM=$CODE_VM"
+echo "DOC_GEN=$DOC_GEN"
+echo "--------------------------------------------------------"
+echo "   LOG "
+echo "--------------------------------------------------------"
 
 # neo-cli
 git clone --single-branch --branch $BRANCH_CLI $SOURCE_CLI /src/neo-cli
@@ -80,7 +100,8 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
         git checkout pr_$PR_VM
     fi
     dotnet remove /src/neo/neo/neo.csproj package neo.vm
-    dotnet sln /src/neo/neo.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
+    dotnet sln /src/neo/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
+    dotnet add /src/neo-cli/neo-cli/neo-cli.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
@@ -94,6 +115,7 @@ if [[ -f "/analysis.xml" ]]; then
     cd /
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
+    dotnet build /src/neo-vm/neo-vm.sln -r ubuntu.16.04-x64
     dotnet build /src/neo-cli/neo-cli.sln -r ubuntu.16.04-x64
     dotnet-sonarscanner end
 fi
@@ -106,4 +128,3 @@ dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubun
 mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
 #mkdir /build/neo-cli/Plugins
 #mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins
-
