@@ -52,7 +52,10 @@ class Batch(object):
             self.report.tests[test['name']]['blocks'][node] = blocks
 
             node_logs = os.path.join(testdir, node + '_logs.tar')
-            #self.dc.copy2tar(node, '/opt/neo-cli/Logs', node_logs)
+            try:
+                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs/ConsensusService', node_logs)
+            except:
+                print('     Logs not found for {}'.format(node))
 
             node_stats = os.path.join(testdir, node + '_stats.json')
             #self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)

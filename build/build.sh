@@ -61,7 +61,7 @@ echo "CODE_VM=$CODE_VM"
 echo "DOC_GEN=$DOC_GEN"
 echo "SC_ANA=$SC_ANA"
 echo "--------------------------------------------------------"
-echo "   LOG "
+echo "   BUILD LOG "
 echo "--------------------------------------------------------"
 
 # neo-cli
@@ -101,9 +101,8 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
         git fetch origin refs/pull/$PR_VM/head:pr_$PR_VM
         git checkout pr_$PR_VM
     fi
-    dotnet remove /src/neo/neo/neo.csproj package neo.vm
-    dotnet sln /src/neo/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
-    dotnet add /src/neo-cli/neo-cli/neo-cli.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
+    dotnet remove /src/neo/neo/neo.csproj package neo.vm  
+    dotnet sln /src/neo-cli/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
@@ -117,7 +116,6 @@ if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
     cd /
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
-    dotnet build /src/neo-vm/neo-vm.sln -r ubuntu.16.04-x64
     dotnet build /src/neo-cli/neo-cli.sln -r ubuntu.16.04-x64
     dotnet-sonarscanner end
 fi
