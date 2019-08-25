@@ -15,7 +15,7 @@ PR_VM=0
 PR_PLG=0
 
 # TODO: getopt long arguments
-while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d option; do
+while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d,q option; do
     case "${option}" in
         w) SOURCE_NEO=${OPTARG};;
         x) SOURCE_CLI=${OPTARG};;
@@ -32,6 +32,7 @@ while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d option; do
         a) CODE_NEO=1;;
         b) CODE_VM=1;;
         d) DOC_GEN=1;;
+        q) SC_ANA=1;;
     esac
 done
 
@@ -58,6 +59,7 @@ echo "PR_PLG=$PR_PLG"
 echo "CODE_NEO=$CODE_NEO"
 echo "CODE_VM=$CODE_VM"
 echo "DOC_GEN=$DOC_GEN"
+echo "SC_ANA=$SC_ANA"
 echo "--------------------------------------------------------"
 echo "   LOG "
 echo "--------------------------------------------------------"
@@ -111,7 +113,7 @@ if [[ $DOC_GEN -eq 1 ]]; then
 fi
 
 # Analysis
-if [[ -f "/analysis.xml" ]]; then
+if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
     cd /
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
