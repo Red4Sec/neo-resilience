@@ -63,6 +63,7 @@ parser.add_argument('--code-neo', action='store_true', help='Build using github 
 parser.add_argument('--code-vm', action='store_true', help='Build using github neo-vm code as reference')
 
 parser.add_argument('--doc', action='store_true', help='Generate code documentation')
+parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
 

@@ -34,6 +34,7 @@ class DockerControl(object):
         if (args.pr_plg): build_arguments += ' -g {}'.format(args.pr_plg)
         if (args.code_neo): build_arguments += ' -a'
         if (args.code_vm): build_arguments += ' -b'
+        if (args.analysis): build_arguments += ' -q'
         if (args.doc):
             build_arguments += ' -d'
             path[os.path.join(os.getcwd(),'output/neo3-doc')] = {'bind': '/doc', 'mode': 'rw'}
