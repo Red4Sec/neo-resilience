@@ -20,7 +20,7 @@ namespace Neo.Plugins
         private long _taskRun = 0;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
-        private const int SLEEP_START = 70000;
+        private const int SLEEP_START = 51000;
         private const int SLEEP_ROUND = 5000;
         private const int SLEEP_TX = 500;
         private const string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
@@ -200,6 +200,7 @@ namespace Neo.Plugins
                 var from = sources[i];
                 var to = destinations[i];
                 long fee = rnd.Next(250000000, 800000000);
+                Console.WriteLine();
 
                 var option = rnd.Next(1, 3);
                 switch (option)

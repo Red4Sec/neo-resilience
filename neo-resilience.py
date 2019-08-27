@@ -116,7 +116,7 @@ for test in test_batch:
     print('[+] Test: {}'.format(test['name']))
     print('     Desc: {}'.format(test['desc']))
     print('     Phases: {}'.format(len(test['phases'])))
-    print('     Duration: {}s'.format(sum(p['duration'] for p in test['phases'])))
+    print('     Duration: {}s'.format(sum(p['duration'] for p in test['phases']) + test['start-delay']))
     print('     Transactions: {}'.format(test['tx']))
     print('     Phases:')
 
