@@ -49,10 +49,10 @@ pubkey: 036ef783e4dce4b4b128d4674b29739614d0599991c88ee126263004c9f394b110
 wif: KxUr2tg4pSmFzxDttp2YLQLPEmgn8LgmbQfq57eorsfhsAPHrwR5
 ```
 ## Wallet 0
-501 Address with low scrypt encryption for transaction generation. (# TODO: NEO 3.0)
+501 Address with low scrypt encryption for faster transaction generation.
 ```
 wallet0.json
-ALfGDuHzLkiSdGJdfDFYrntEnKLuRmkqcv (Master)
-Kykngy6UbzH9fcTQUgLahedNbQKchnCEXDRSwhmQmhkNU287QBBb
+AHi3B6pmdB4xwNVCvHkG8Kzhao425L17VR (Master)
+L115fWM9QtPF48scGfvfQtvw5C4LKRNHDLd8KfQce9PeTQS4nZeB
 ...
 ```

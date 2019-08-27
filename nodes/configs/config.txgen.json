@@ -12,7 +12,8 @@
         "BindAddress": "0.0.0.0",
         "Port": 10332,
         "SslCert": "",
-        "SslCertPassword": ""
+        "SslCertPassword": "",
+        "MaxGasInvoke": 50
       },
       "UnlockWallet": {
         "Path": "wallet.json",
