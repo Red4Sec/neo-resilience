@@ -192,6 +192,7 @@ namespace Neo.Plugins
 
             var sources = Wallet.GetAccounts().Skip(1).ToArray();
             var destinations = sources.OrderByDescending(x => x.ScriptHash).ToArray();
+            Console.WriteLine();
 
             for (int i = 0; i < sources.Count(); i++)
             {
@@ -200,7 +201,6 @@ namespace Neo.Plugins
                 var from = sources[i];
                 var to = destinations[i];
                 long fee = rnd.Next(250000000, 800000000);
-                Console.WriteLine();
 
                 var option = rnd.Next(1, 3);
                 switch (option)
