@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Akka.Actor;
+using Neo.IO;
+using Neo.Network.P2P;
+using Neo.Network.P2P.Payloads;
+using Neo.SmartContract;
+using Neo.SmartContract.Native;
+using Neo.Wallets;
+using System;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Akka.Actor;
-using Neo.IO;
-using Neo.Ledger;
-using Neo.Network.P2P;
-using Neo.Network.P2P.Payloads;
-using Neo.SmartContract;
-using Neo.VM;
-using Neo.Wallets;
 
 namespace Neo.Plugins
 {
@@ -23,7 +22,7 @@ namespace Neo.Plugins
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
         private const int SLEEP_START = 70000;
         private const int SLEEP_ROUND = 5000;
-        private const int SLEEP_TX = 50;
+        private const int SLEEP_TX = 500;
         private const string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
 
         public override void Configure() { }
@@ -62,7 +61,7 @@ namespace Neo.Plugins
             {
                 case "launch": Launch(); return true;
                 case "stop": Stop(); return true;
-                case "balances": Balances(); return true;
+                case "balances": Balances(args); return true;
                 case "distribute": Distribute(args); return true;
                 case "collect": Collect(args); return true;
                 case "flood": Flood(); return true;
@@ -115,63 +114,73 @@ namespace Neo.Plugins
             return _task?.Status != TaskStatus.Running;
         }
 
-        private bool Balances()
+        private bool Balances(string[] args)
         {
             if (!CheckWallet()) return false;
-            foreach (var dir in Wallet.GetAccounts())
+
+            if (args.Length > 1 && args[1].ToLower() == "all")
             {
-                var neo = Fixed8.Zero;
-                var gas = Fixed8.Zero;
-                var addr = dir.Address.ToScriptHash();
-                var unSpendCoins = Wallet.GetCoins(new[] { addr }).Where(x => x.State != CoinState.Spent && x.State == CoinState.Confirmed);
-                foreach (var coin in unSpendCoins)
+                foreach (UInt160 account in Wallet.GetAccounts().Select(p => p.ScriptHash))
                 {
-                    if (coin.Output.AssetId == Blockchain.GoverningToken.Hash)
+                    var neo = Wallet.GetBalance(NativeContract.NEO.Hash, account);
+                    var gas = Wallet.GetBalance(NativeContract.GAS.Hash, account);
+                    if (neo.Value != 0 || gas.Value != 0)
                     {
-                        neo += coin.Output.Value;
-                    }
-                    else if (coin.Output.AssetId == Blockchain.UtilityToken.Hash)
-                    {
-                        gas += coin.Output.Value;
+                        Console.WriteLine(account.ToAddress() + "    " + "NEO: " + neo + "    GAS: " + gas);
+
                     }
                 }
-                Console.WriteLine(dir.Address.ToString() + "\n\tNEO: " + neo + "\n\tGAS: " + gas);
             }
+            Console.WriteLine("Total    NEO: " + Wallet.GetAvailable(NativeContract.NEO.Hash) + "    GAS: " + Wallet.GetAvailable(NativeContract.GAS.Hash));
+
             return true;
         }
 
         private bool Distribute(string[] args)
         {
             if (!CheckWallet()) return false;
-            if (args.Length < 3) return false;
+            if (args.Length != 3) return false;
+
             var value = BigDecimal.Parse(args[1], 0);
             var org = Wallet.GetAccounts().First().Address.ToScriptHash();
             var dest = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
+            long fee = 300000000;
+
             if (args[2].ToLower() == "gas")
             {
-                return SendMany(Blockchain.UtilityToken.Hash, org, dest, value, Fixed8.One, org);
+                return SendMany(NativeContract.GAS.Hash, org, dest, value.ToString(), fee);
             }
-            return SendMany(Blockchain.GoverningToken.Hash, org, dest, value, Fixed8.One, org);
+
+            return SendMany(NativeContract.NEO.Hash, org, dest, value.ToString(), fee);
         }
 
         private bool Collect(string[] args)
         {
             if (!CheckWallet()) return false;
-            if (args.Length < 2) return false;
-            var addr = Wallet.GetAccounts().First().Address.ToScriptHash();
-            if (args[1].ToLower() == "gas")
-            {
-                var balance = Wallet.GetBalance(Blockchain.UtilityToken.Hash) - Fixed8.One;
-                var amount = new BigDecimal(new BigInteger(balance.GetData()), 8);
-                return Send(Blockchain.UtilityToken.Hash, null, addr, amount, Fixed8.One, addr);
-            }
-            else
-            {
-                var balance = Wallet.GetBalance(Blockchain.GoverningToken.Hash);
-                var amount = new BigDecimal(new BigInteger(balance.GetData()), 8);
-                return Send(Blockchain.GoverningToken.Hash, null, addr, amount, Fixed8.One, addr);
-            }
+            if (args.Length != 2) return false;
 
+            var dest = Wallet.GetAccounts().First().Address.ToScriptHash();
+            var sources = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
+            long fee = 250000000;
+
+            var assetId = args[1].ToLower() == "gas" ? NativeContract.GAS.Hash : NativeContract.NEO.Hash;
+
+            foreach (var dir in sources)
+            {
+                var balance = Wallet.GetBalance(assetId, dir);
+
+                if (assetId == NativeContract.GAS.Hash)
+                {
+                    var bi = BigInteger.Subtract(balance.Value, fee);
+                    balance = new BigDecimal(bi, 8);
+                };
+
+                if (balance.Value > 0)
+                {
+                    Send(assetId, dir, dest, balance.ToString(), fee);
+                }
+            }
+            return true;
         }
 
         private bool Flood()
@@ -179,49 +188,42 @@ namespace Neo.Plugins
             if (!CheckWallet()) return false;
 
             var rnd = new Random();
-            var contract = UInt160.Parse(CONTRACT);
+            //var contract = UInt160.Parse(CONTRACT);
 
-            foreach (var dir in Wallet.GetAccounts().Skip(1))
+            var sources = Wallet.GetAccounts().Skip(1).ToArray();
+            var destinations = sources.OrderByDescending(x => x.ScriptHash).ToArray();
+
+            for (int i = 0; i < sources.Count(); i++)
             {
                 if (Interlocked.Read(ref _taskRun) == 0) return true;
-                var addr = dir.Address.ToScriptHash();
-                var from = addr;
-                var to = addr;
-                var change_address = addr;
-                var fee = Fixed8.FromDecimal(rnd.Next(0, 25) / 543.3m);
 
-                var option = rnd.Next(1, 6);
+                var from = sources[i];
+                var to = destinations[i];
+                long fee = rnd.Next(250000000, 800000000);
+
+                var option = rnd.Next(1, 3);
                 switch (option)
                 {
                     case 1:
-                    case 2:
                         {
                             // NEO
                             var neo = BigDecimal.Parse(rnd.Next(1, 10).ToString(), 0);
-                            Console.WriteLine(dir.Address + " --  NEO - Amount: " + neo + " Fee: " + fee);
-                            Send(Blockchain.GoverningToken.Hash, from, to, neo, fee, change_address);
+                            Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo );
+                            Send(NativeContract.NEO.Hash, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
                             break;
                         }
 
-                    case 3:
-                    case 4:
+                    case 2:
                         {
                             // GAS
                             var gas = new BigDecimal(new BigInteger(new Random().Next(10000000, 900000000)), 8);
-                            Console.WriteLine(dir.Address + " --  GAS - Amount: " + gas + " Fee: " + fee);
-                            Send(Blockchain.UtilityToken.Hash, from, to, gas, fee, change_address);
+                            Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
+                            Send(NativeContract.GAS.Hash, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
                             break;
                         }
-                    case 5:
+                    case 3:
                         {
-                            // CLAIM
-                            Console.WriteLine(dir.Address + " --  CLAIM ");
-                            Claim(dir.Address);
-                            break;
-                        }
-                    case 6:
-                    case 7:
-                        {
+                            /*
                             // SC
                             var amount = rnd.Next(10, 100);
                             var args = new[]
@@ -229,7 +231,7 @@ namespace Neo.Plugins
                                 new ContractParameter()
                                 {
                                     Type = ContractParameterType.Hash160,
-                                    Value = dir.Address.ToScriptHash()
+                                    Value = to.Address.ToScriptHash()
                                 },
                                 new ContractParameter()
                                 {
@@ -237,9 +239,10 @@ namespace Neo.Plugins
                                     Value = amount
                                 }
                             };
-                            Console.WriteLine(dir.Address + " --  NEP5 Transfer - Amount: " + amount);
+                            Console.WriteLine("  NEP5  " + from.Address + " >> " + to.Address + " --  " + gas);
                             // TODO fix nep5 transfer
-                            Invoke(contract, "transfer", args, dir.Address.ToScriptHash());
+                            Invoke(contract, "transfer", args, to.Address.ToScriptHash());
+                            */
                             break;
                         }
                 }
@@ -265,75 +268,77 @@ namespace Neo.Plugins
             if (context.Completed)
             {
                 tx.Witnesses = context.GetWitnesses();
-                Wallet.ApplyTransaction(tx);
                 System.LocalNode.Tell(new LocalNode.Relay { Inventory = tx });
                 return true;
             }
             return false;
         }
 
-        private bool Send(UIntBase assetId, UInt160 from, UInt160 to, BigDecimal amount, Fixed8 fee, UInt160 change_address)
+        private bool Send(UInt160 assetId, UInt160 from, UInt160 to, string amount, long fee)
         {
             if (!CheckWallet()) return false;
-            if (amount.Sign <= 0 || fee < Fixed8.Zero)
+            
+            AssetDescriptor descriptor = new AssetDescriptor(assetId);
+            BigDecimal value = BigDecimal.Parse(amount, descriptor.Decimals);
+
+            if (value.Sign <= 0 || fee < 0)
             {
                 Console.WriteLine("Invalid value");
                 return false;
             }
 
-            var outputs = new[]
+            Transaction tx = Wallet.MakeTransaction(new[]
             {
                 new TransferOutput
                 {
                     AssetId = assetId,
-                    Value = amount,
+                    Value = value,
                     ScriptHash = to
                 }
-            };
-
-            var tx = Wallet.MakeTransaction(null, outputs, from: from, change_address: change_address, fee: fee);
+            }, from);
             if (tx == null)
             {
                 Console.WriteLine("Insufficient funds");
                 return false;
             }
 
-            var context = new ContractParametersContext(tx);
-            Wallet.Sign(context);
-            tx.Witnesses = context.GetWitnesses();
+            //tx.NetworkFee = fee;
+            ContractParametersContext transContext = new ContractParametersContext(tx);
+
+            Wallet.Sign(transContext);
+            tx.Witnesses = transContext.GetWitnesses();
+
             if (tx.Size > 1024)
             {
-                var calFee = Fixed8.FromDecimal(tx.Size * 0.00001m + 0.001m);
-                if (fee < calFee)
-                {
-                    fee = calFee;
-                    tx = Wallet.MakeTransaction(null, outputs, from: from, change_address: change_address, fee: fee);
-                    if (tx == null)
-                    {
-                        Console.WriteLine("Insufficient funds");
-                        return false;
-                    }
-                }
+                long calFee = tx.Size * 1000 + 100000;
+                if (tx.NetworkFee < calFee)
+                    tx.NetworkFee = calFee;
             }
+
             return SignAndRelay(tx);
         }
 
-        private bool SendMany(UIntBase assetId, UInt160 from, UInt160[] to, BigDecimal amount, Fixed8 fee, UInt160 change_address)
+        private bool SendMany(UInt160 assetId, UInt160 from, UInt160[] to, string amount, long fee)
         {
             if (!CheckWallet()) return false;
-            if (to.Length == 0 || fee < Fixed8.Zero)
+
+            AssetDescriptor descriptor = new AssetDescriptor(assetId);
+            BigDecimal value = BigDecimal.Parse(amount, descriptor.Decimals);
+
+            if (to.Length == 0 || value.Sign <= 0 || fee < 0)
             {
-                Console.WriteLine("Invalid params");
+                Console.WriteLine("Invalid value");
                 return false;
             }
-            var outputs = new TransferOutput[to.Length];
+
+            TransferOutput[] outputs = new TransferOutput[to.Length];
 
             for (int i = 0; i < to.Length; i++)
             {
                 outputs[i] = new TransferOutput
                 {
                     AssetId = assetId,
-                    Value = amount,
+                    Value = value,
                     ScriptHash = to[i]
                 };
                 if (outputs[i].Value.Sign <= 0)
@@ -342,70 +347,34 @@ namespace Neo.Plugins
                     return false;
                 }
             }
-            var tx = Wallet.MakeTransaction(null, outputs, from: from, change_address: change_address, fee: fee);
+
+            Transaction tx = Wallet.MakeTransaction(outputs, from);
             if (tx == null)
             {
                 Console.WriteLine("Insufficient funds");
                 return false;
             }
 
-            var context = new ContractParametersContext(tx);
-            Wallet.Sign(context);
-            tx.Witnesses = context.GetWitnesses();
+            //tx.NetworkFee = fee;
+            ContractParametersContext transContext = new ContractParametersContext(tx);
+
+            Wallet.Sign(transContext);
+            tx.Witnesses = transContext.GetWitnesses();
+
             if (tx.Size > 1024)
             {
-                var calFee = Fixed8.FromDecimal(tx.Size * 0.00001m + 0.001m);
-                if (fee < calFee)
-                {
-                    fee = calFee;
-                    tx = Wallet.MakeTransaction(null, outputs, from: from, change_address: change_address, fee: fee);
-                    if (tx == null)
-                    {
-                        Console.WriteLine("Insufficient funds");
-                        return false;
-                    }
-                }
+                long calFee = tx.Size * 1000 + 100000;
+                if (tx.NetworkFee < calFee)
+                    tx.NetworkFee = calFee;
             }
-            return SignAndRelay(tx);
-        }
 
-        private bool Claim(string addr)
-        {
-            if (!CheckWallet()) return false;
-
-            var claims = Wallet.GetUnclaimedCoins()
-                .Where(x => x.Address == addr)
-                .Select(p => p.Reference)
-                .Take(5)
-                .ToArray();
-
-            if (claims.Count() == 0)
-                return true;
-
-            ClaimTransaction tx;
-            using (var snapshot = Blockchain.Singleton.GetSnapshot())
-            {
-                tx = new ClaimTransaction
-                {
-                    Claims = claims,
-                    Attributes = new TransactionAttribute[0],
-                    Inputs = new CoinReference[0],
-                    Outputs = new[]
-                    {
-                        new TransactionOutput
-                        {
-                            AssetId = Blockchain.UtilityToken.Hash,
-                            Value = snapshot.CalculateBonus(claims),
-                            ScriptHash = addr.ToScriptHash()
-                        }
-                    }
-                };
-            }
             return SignAndRelay(tx);
         }
 
         private bool Invoke(UInt160 hash, string method, ContractParameter[] args, UInt160 from)
         {
+            return true;
+            /*
             byte[] script;
             using (var sb = new ScriptBuilder())
             {
@@ -450,6 +419,7 @@ namespace Neo.Plugins
             Wallet.Sign(context);
             tx.Witnesses = context.GetWitnesses();
             return SignAndRelay(tx);
+            */
         }
     }
 }
