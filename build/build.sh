@@ -101,7 +101,7 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
         git fetch origin refs/pull/$PR_VM/head:pr_$PR_VM
         git checkout pr_$PR_VM
     fi
-    dotnet remove /src/neo/neo/neo.csproj package neo.vm  
+    dotnet remove /src/neo/neo/neo.csproj package neo.vm
     dotnet sln /src/neo-cli/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
@@ -125,6 +125,8 @@ dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubun
 #dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
 
 # Output binaries
-mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
+if [[ -d "/src/neo-cli/neo-cli/neo-cli/" ]]; then
+    mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
+fi
 #mkdir /build/neo-cli/Plugins
 #mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins
