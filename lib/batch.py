@@ -58,9 +58,12 @@ class Batch(object):
                 print('     Logs not found for {}'.format(node))
 
             node_stats = os.path.join(testdir, node + '_stats.json')
-            #self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
-            #with open(node_stats) as f:
-            #    self.report.tests[test['name']]['stats'][node] = json.load(f)
+            try:
+                self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
+                with open(node_stats) as f:
+                    self.report.tests[test['name']]['stats'][node] = json.load(f)
+            except:
+                print('     Stats not found for {}'.format(node))
 
 
     def get_report(self):
