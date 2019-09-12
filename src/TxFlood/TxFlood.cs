@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Neo.IO;
 using Neo.Ledger;
 using Neo.Network.P2P;
@@ -11,6 +6,11 @@ using Neo.Network.P2P.Payloads;
 using Neo.SmartContract;
 using Neo.VM;
 using Neo.Wallets;
+using System;
+using System.Linq;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Neo.Plugins
 {
@@ -21,12 +21,34 @@ namespace Neo.Plugins
         private long _taskRun = 0;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
-        private const int SLEEP_START = 70000;
-        private const int SLEEP_ROUND = 5000;
-        private const int SLEEP_TX = 50;
-        private const string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
+
+        private int SLEEP_START = 70000;
+        private int SLEEP_ROUND = 5000;
+        private int SLEEP_TX = 50;
+        private string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
 
         public override void Configure() { }
+
+        private bool UpdateEnvVar(ref int val, string varName)
+        {
+            var value = Environment.GetEnvironmentVariable(varName);
+            if (string.IsNullOrEmpty(value)) return false;
+            if (!int.TryParse(value, out var intValue)) return false;
+            if (intValue == val) return false;
+
+            val = intValue;
+            return true;
+        }
+
+        private bool UpdateEnvVar(ref string val, string varName)
+        {
+            var value = Environment.GetEnvironmentVariable(varName);
+            if (string.IsNullOrEmpty(value)) return false;
+            if (value == val) return false;
+
+            val = value;
+            return true;
+        }
 
         protected override void OnPluginsLoaded()
         {
@@ -34,6 +56,13 @@ namespace Neo.Plugins
             {
                 while (true)
                 {
+                    UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
+                    UpdateEnvVar(ref SLEEP_ROUND, ENV_TASK_CONTROLLER + "_SLEEP_ROUND");
+                    UpdateEnvVar(ref SLEEP_TX, ENV_TASK_CONTROLLER + "_SLEEP_TX");
+                    UpdateEnvVar(ref CONTRACT, ENV_TASK_CONTROLLER + "_CONTRACT");
+
+                    // Start stop
+
                     var flag = Environment.GetEnvironmentVariable(ENV_TASK_CONTROLLER);
 
                     if (!string.IsNullOrEmpty(flag))
