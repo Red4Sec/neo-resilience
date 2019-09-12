@@ -48,15 +48,6 @@ class Batch(object):
         }
 
         for node in nodes:
-            blocks = nodehelper.get_node_height(self.dc, node) - initial_block_count
-            self.report.tests[test['name']]['blocks'][node] = blocks
-
-            node_logs = os.path.join(testdir, node + '_logs.tar')
-            try:
-                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs/ConsensusService', node_logs)
-            except:
-                print('     Logs not found for {}'.format(node))
-
             node_stats = os.path.join(testdir, node + '_stats.json')
             try:
                 self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
@@ -64,6 +55,15 @@ class Batch(object):
                     self.report.tests[test['name']]['stats'][node] = json.load(f)
             except:
                 print('     Stats not found for {}'.format(node))
+
+            node_logs = os.path.join(testdir, node + '_logs.tar')
+            try:
+                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs/ConsensusService', node_logs)
+            except:
+                print('     Logs not found for {}'.format(node))
+
+            blocks = nodehelper.get_node_height(self.dc, node) - initial_block_count
+            self.report.tests[test['name']]['blocks'][node] = blocks
 
 
     def get_report(self):
