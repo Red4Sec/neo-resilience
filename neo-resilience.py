@@ -120,7 +120,7 @@ for test in test_batch:
     print('     Transactions: {}'.format(test['tx']))
     print('     Phases:')
 
-    nodehelper.config_txgen(test['tx'])
+    nodehelper.config_txgen(test['tx'], test['start-delay'], test['tx_round'], test['tx_sleep'])
     dc.neo_net_up(args.show_output)
 
     print('        Network warm up - {}s'.format(test['start-delay']))

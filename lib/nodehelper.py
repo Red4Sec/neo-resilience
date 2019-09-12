@@ -22,9 +22,12 @@ def config_node(dc, node, values, new=True):
     dc.node_exec(node, tc_cmd + ' '.join(tc_params))
 
 
-def config_txgen(n):
+def config_txgen(tx_gen, tx_gen_start, tx_gen_round, tx_gen_sleep):
     with open('nodes/txgen.env', 'w') as f:
-        f.write('NEO_TX_RUN={}\n'.format(n))
+        f.write('NEO_TX_RUN={}\n'.format(tx_gen))
+        f.write('NEO_TX_RUN_SLEEP_START={}\n'.format(tx_gen_start + 1))
+        f.write('NEO_TX_RUN_SLEEP_ROUND={}\n'.format(tx_gen_round))
+        f.write('NEO_TX_RUN_SLEEP_TX={}\n'.format(tx_gen_sleep))
 
 
 def get_node_height(dc, node):
