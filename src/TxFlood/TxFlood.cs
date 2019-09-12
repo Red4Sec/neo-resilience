@@ -20,12 +20,34 @@ namespace Neo.Plugins
         private long _taskRun = 0;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
-        private const int SLEEP_START = 51000;
-        private const int SLEEP_ROUND = 5000;
-        private const int SLEEP_TX = 500;
-        private const string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
+
+        private int SLEEP_START = 51000;
+        private int SLEEP_ROUND = 5000;
+        private int SLEEP_TX = 500;
+        private string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
 
         public override void Configure() { }
+
+        private bool UpdateEnvVar(ref int val, string varName)
+        {
+            var value = Environment.GetEnvironmentVariable(varName);
+            if (string.IsNullOrEmpty(value)) return false;
+            if (!int.TryParse(value, out var intValue)) return false;
+            if (intValue == val) return false;
+
+            val = intValue;
+            return true;
+        }
+
+        private bool UpdateEnvVar(ref string val, string varName)
+        {
+            var value = Environment.GetEnvironmentVariable(varName);
+            if (string.IsNullOrEmpty(value)) return false;
+            if (value == val) return false;
+
+            val = value;
+            return true;
+        }
 
         protected override void OnPluginsLoaded()
         {
@@ -33,6 +55,11 @@ namespace Neo.Plugins
             {
                 while (true)
                 {
+                    UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
+                    UpdateEnvVar(ref SLEEP_ROUND, ENV_TASK_CONTROLLER + "_SLEEP_ROUND");
+                    UpdateEnvVar(ref SLEEP_TX, ENV_TASK_CONTROLLER + "_SLEEP_TX");
+                    UpdateEnvVar(ref CONTRACT, ENV_TASK_CONTROLLER + "_CONTRACT");
+
                     var flag = Environment.GetEnvironmentVariable(ENV_TASK_CONTROLLER);
 
                     if (!string.IsNullOrEmpty(flag))
@@ -209,7 +236,7 @@ namespace Neo.Plugins
                         {
                             // NEO
                             var neo = BigDecimal.Parse(rnd.Next(1, 10).ToString(), 0);
-                            Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo );
+                            Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
                             Send(NativeContract.NEO.Hash, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
                             break;
                         }
@@ -278,7 +305,7 @@ namespace Neo.Plugins
         private bool Send(UInt160 assetId, UInt160 from, UInt160 to, string amount, long fee)
         {
             if (!CheckWallet()) return false;
-            
+
             AssetDescriptor descriptor = new AssetDescriptor(assetId);
             BigDecimal value = BigDecimal.Parse(amount, descriptor.Decimals);
 
