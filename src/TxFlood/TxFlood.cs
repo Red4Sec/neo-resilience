@@ -60,6 +60,8 @@ namespace Neo.Plugins
                     UpdateEnvVar(ref SLEEP_TX, ENV_TASK_CONTROLLER + "_SLEEP_TX");
                     UpdateEnvVar(ref CONTRACT, ENV_TASK_CONTROLLER + "_CONTRACT");
 
+                    // Start stop
+
                     var flag = Environment.GetEnvironmentVariable(ENV_TASK_CONTROLLER);
 
                     if (!string.IsNullOrEmpty(flag))
