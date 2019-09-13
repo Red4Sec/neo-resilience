@@ -1,0 +1,17 @@
+[
+    {
+        "name": "devnet",
+        "desc": "devnet",
+        "start-delay": 50,
+        "tx": true,
+        "tx_round": 5000,
+        "tx_sleep": 500,
+        "phases":
+        [
+            {
+                "duration": 604800,
+                "config": {}
+            }
+        ]
+    }
+]

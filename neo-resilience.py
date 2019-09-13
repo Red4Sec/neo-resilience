@@ -41,7 +41,7 @@ signal.signal(signal.SIGINT, force_exit)
 
 parser = argparse.ArgumentParser(description='neo-resilience - operational testing platform')
 
-parser.add_argument('-t', '--tests-file', type=str, default='tests.json', help='JSON tests file')
+parser.add_argument('-t', '--tests-file', type=str, default='tests/default-tests.json', help='JSON tests file')
 parser.add_argument('-c', '--custom-build', type=str, help='ZIP neo-cli')
 
 parser.add_argument('--source-neo', type=str, help='Use a specific neo repo')

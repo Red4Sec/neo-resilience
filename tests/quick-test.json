@@ -1,0 +1,68 @@
+[
+    {
+        "name": "consensus-perfect",
+        "desc": "Quick Consensus test in a perfect environment.",
+        "start-delay": 40,
+        "tx": false,
+        "tx_round": 3000,
+        "tx_sleep": 400,
+        "phases":
+        [
+            {
+                "duration": 120,
+                "config": {}
+            }
+        ]
+    },
+    {
+        "name": "consensus-normal",
+        "desc": "Quick Consensus test in a normal environment.",
+        "start-delay": 40,
+        "tx": true,
+        "tx_round": 1000,
+        "tx_sleep": 100,
+        "phases":
+        [
+            {
+                "duration": 120,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [10, 15],
+                        "corrupt": 2
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            }
+        ]
+    }
+]
