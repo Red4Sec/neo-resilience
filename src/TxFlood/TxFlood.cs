@@ -1,4 +1,4 @@
-﻿using Akka.Actor;
+using Akka.Actor;
 using Neo.IO;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
@@ -8,6 +8,7 @@ using Neo.Wallets;
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +19,10 @@ namespace Neo.Plugins
         private Wallet Wallet => System?.RpcServer?.Wallet;
         private Task _task;
         private long _taskRun = 0;
+        private readonly Random _rand;
+        private WalletAccount[] _sources, _destinations;
+        private Type _sendDirectlyType;
+        private FieldInfo _sendDirectlyField;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
 
@@ -27,6 +32,25 @@ namespace Neo.Plugins
         private string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
 
         public override void Configure() { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public TxFlood() : base()
+        {
+            _rand = new Random();
+
+            // This is used for relay directly without enter in our mempool
+
+            _sendDirectlyType = typeof(LocalNode).GetMembers(BindingFlags.NonPublic)
+                .Where(u => u.Name == "SendDirectly")
+                .Cast<Type>()
+                .FirstOrDefault();
+
+            _sendDirectlyField = _sendDirectlyType.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Where(u => u.Name == "Inventory")
+                .FirstOrDefault();
+        }
 
         private bool UpdateEnvVar(ref int val, string varName)
         {
@@ -88,12 +112,32 @@ namespace Neo.Plugins
 
             switch (args[0].ToLower())
             {
-                case "launch": Launch(); return true;
                 case "stop": Stop(); return true;
-                case "balances": Balances(args); return true;
-                case "distribute": Distribute(args); return true;
-                case "collect": Collect(args); return true;
-                case "flood": Flood(); return true;
+                case "launch": Launch(); return true;
+                case "balances":
+                    {
+                        if (!InitWallet()) return false;
+                        Balances(args);
+                        return true;
+                    }
+                case "distribute":
+                    {
+                        if (!InitWallet()) return false;
+                        Distribute(args);
+                        return true;
+                    }
+                case "collect":
+                    {
+                        if (!InitWallet()) return false;
+                        Collect(args);
+                        return true;
+                    }
+                case "flood":
+                    {
+                        if (!InitWallet()) return false;
+                        Flood();
+                        return true;
+                    }
             }
 
             return false;
@@ -108,6 +152,8 @@ namespace Neo.Plugins
 
         public bool Launch()
         {
+            if (!InitWallet()) return false;
+
             if (_task?.Status == TaskStatus.Running)
             {
                 Debug("Already running");
@@ -145,8 +191,6 @@ namespace Neo.Plugins
 
         private bool Balances(string[] args)
         {
-            if (!CheckWallet()) return false;
-
             if (args.Length > 1 && args[1].ToLower() == "all")
             {
                 foreach (UInt160 account in Wallet.GetAccounts().Select(p => p.ScriptHash))
@@ -156,7 +200,6 @@ namespace Neo.Plugins
                     if (neo.Value != 0 || gas.Value != 0)
                     {
                         Console.WriteLine(account.ToAddress() + "    " + "NEO: " + neo + "    GAS: " + gas);
-
                     }
                 }
             }
@@ -167,7 +210,6 @@ namespace Neo.Plugins
 
         private bool Distribute(string[] args)
         {
-            if (!CheckWallet()) return false;
             if (args.Length != 3) return false;
 
             var value = BigDecimal.Parse(args[1], 0);
@@ -185,7 +227,6 @@ namespace Neo.Plugins
 
         private bool Collect(string[] args)
         {
-            if (!CheckWallet()) return false;
             if (args.Length != 2) return false;
 
             var dest = Wallet.GetAccounts().First().Address.ToScriptHash();
@@ -212,41 +253,52 @@ namespace Neo.Plugins
             return true;
         }
 
+        private bool InitWallet()
+        {
+            if (Wallet == null)
+            {
+                Console.WriteLine("no wallet or rpc disabled");
+                return false;
+            }
+
+            _sources = Wallet.GetAccounts().Skip(1).ToArray();
+            _destinations = _sources.OrderByDescending(x => x.ScriptHash).ToArray();
+
+            // Warm up
+
+            Parallel.ForEach(_sources, (a) => a.GetKey());
+
+            return true;
+        }
+
         private bool Flood()
         {
-            if (!CheckWallet()) return false;
-
-            var rnd = new Random();
             //var contract = UInt160.Parse(CONTRACT);
-
-            var sources = Wallet.GetAccounts().Skip(1).ToArray();
-            var destinations = sources.OrderByDescending(x => x.ScriptHash).ToArray();
             Console.WriteLine();
 
-            for (int i = 0; i < sources.Count(); i++)
+            for (int i = 0; i < _sources.Count(); i++)
             {
                 if (Interlocked.Read(ref _taskRun) == 0) return true;
 
-                var from = sources[i];
-                var to = destinations[i];
-                long fee = rnd.Next(250000000, 800000000);
+                var from = _sources[i];
+                var to = _destinations[i];
+                long fee = _rand.Next(250_000_000, 800_000_000);
+                var option = _rand.Next(1, 3);
 
-                var option = rnd.Next(1, 3);
                 switch (option)
                 {
                     case 1:
                         {
                             // NEO
-                            var neo = BigDecimal.Parse(rnd.Next(1, 10).ToString(), 0);
+                            var neo = BigDecimal.Parse(_rand.Next(1, 10).ToString(), 0);
                             Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
                             Send(NativeContract.NEO.Hash, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
                             break;
                         }
-
                     case 2:
                         {
                             // GAS
-                            var gas = new BigDecimal(new BigInteger(new Random().Next(10000000, 900000000)), 8);
+                            var gas = new BigDecimal(new BigInteger(_rand.Next(10000000, 900000000)), 8);
                             Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
                             Send(NativeContract.GAS.Hash, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
                             break;
@@ -281,16 +333,6 @@ namespace Neo.Plugins
             return true;
         }
 
-        private bool CheckWallet()
-        {
-            if (Wallet is null)
-            {
-                Console.WriteLine("no wallet or rpc disabled");
-                return false;
-            }
-            return true;
-        }
-
         private bool SignAndRelay(Transaction tx)
         {
             var context = new ContractParametersContext(tx);
@@ -298,7 +340,11 @@ namespace Neo.Plugins
             if (context.Completed)
             {
                 tx.Witnesses = context.GetWitnesses();
-                System.LocalNode.Tell(new LocalNode.Relay { Inventory = tx });
+                //var send = new LocalNode.Relay { Inventory = tx };
+                var send = Activator.CreateInstance(_sendDirectlyType);
+                _sendDirectlyField.SetValue(send, tx);
+
+                System.LocalNode.Tell(send);
                 return true;
             }
             return false;
@@ -306,10 +352,8 @@ namespace Neo.Plugins
 
         private bool Send(UInt160 assetId, UInt160 from, UInt160 to, string amount, long fee)
         {
-            if (!CheckWallet()) return false;
-
-            AssetDescriptor descriptor = new AssetDescriptor(assetId);
-            BigDecimal value = BigDecimal.Parse(amount, descriptor.Decimals);
+            var descriptor = new AssetDescriptor(assetId);
+            var value = BigDecimal.Parse(amount, descriptor.Decimals);
 
             if (value.Sign <= 0 || fee < 0)
             {
@@ -317,7 +361,7 @@ namespace Neo.Plugins
                 return false;
             }
 
-            Transaction tx = Wallet.MakeTransaction(new[]
+            var tx = Wallet.MakeTransaction(new[]
             {
                 new TransferOutput
                 {
@@ -332,28 +376,15 @@ namespace Neo.Plugins
                 return false;
             }
 
-            //tx.NetworkFee = fee;
-            ContractParametersContext transContext = new ContractParametersContext(tx);
-
-            Wallet.Sign(transContext);
-            tx.Witnesses = transContext.GetWitnesses();
-
-            if (tx.Size > 1024)
-            {
-                long calFee = tx.Size * 1000 + 100000;
-                if (tx.NetworkFee < calFee)
-                    tx.NetworkFee = calFee;
-            }
+            if (fee > tx.NetworkFee) tx.NetworkFee = fee;
 
             return SignAndRelay(tx);
         }
 
         private bool SendMany(UInt160 assetId, UInt160 from, UInt160[] to, string amount, long fee)
         {
-            if (!CheckWallet()) return false;
-
-            AssetDescriptor descriptor = new AssetDescriptor(assetId);
-            BigDecimal value = BigDecimal.Parse(amount, descriptor.Decimals);
+            var descriptor = new AssetDescriptor(assetId);
+            var value = BigDecimal.Parse(amount, descriptor.Decimals);
 
             if (to.Length == 0 || value.Sign <= 0 || fee < 0)
             {
@@ -361,7 +392,7 @@ namespace Neo.Plugins
                 return false;
             }
 
-            TransferOutput[] outputs = new TransferOutput[to.Length];
+            var outputs = new TransferOutput[to.Length];
 
             for (int i = 0; i < to.Length; i++)
             {
@@ -378,25 +409,14 @@ namespace Neo.Plugins
                 }
             }
 
-            Transaction tx = Wallet.MakeTransaction(outputs, from);
+            var tx = Wallet.MakeTransaction(outputs, from);
             if (tx == null)
             {
                 Console.WriteLine("Insufficient funds");
                 return false;
             }
 
-            //tx.NetworkFee = fee;
-            ContractParametersContext transContext = new ContractParametersContext(tx);
-
-            Wallet.Sign(transContext);
-            tx.Witnesses = transContext.GetWitnesses();
-
-            if (tx.Size > 1024)
-            {
-                long calFee = tx.Size * 1000 + 100000;
-                if (tx.NetworkFee < calFee)
-                    tx.NetworkFee = calFee;
-            }
+            if (fee > tx.NetworkFee) tx.NetworkFee = fee;
 
             return SignAndRelay(tx);
         }
