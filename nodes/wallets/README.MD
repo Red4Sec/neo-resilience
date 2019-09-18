@@ -1,10 +1,28 @@
 # Wallets
 
-## Wallet Password
+## Wallets Password
 
 ```pass```
 
-## Wallets 1-7
+## Test Wallet
+Funds for testing, dev, ...
+```
+Address: AHi3B6pmdB4xwNVCvHkG8Kzhao425L17VR
+NEO: 50000000
+GAS: 10000000
+WIF: L115fWM9QtPF48scGfvfQtvw5C4LKRNHDLd8KfQce9PeTQS4nZeB
+```
+
+## TX Wallet 0
+501 Address with low scrypt encryption for faster transaction generation.
+```
+wallet0.json
+AHi3B6pmdB4xwNVCvHkG8Kzhao425L17VR (Master)
+L115fWM9QtPF48scGfvfQtvw5C4LKRNHDLd8KfQce9PeTQS4nZeB
+...
+```
+
+## Consensus Wallets 1-7
 
 ```
 wallet1.json
@@ -47,12 +65,4 @@ wallet7.json
 address: AFsQQZgeMpzKbroKhyxhD7JpSbkZzETHdZ
 pubkey: 036ef783e4dce4b4b128d4674b29739614d0599991c88ee126263004c9f394b110
 wif: KxUr2tg4pSmFzxDttp2YLQLPEmgn8LgmbQfq57eorsfhsAPHrwR5
-```
-## Wallet 0
-501 Address with low scrypt encryption for faster transaction generation.
-```
-wallet0.json
-AHi3B6pmdB4xwNVCvHkG8Kzhao425L17VR (Master)
-L115fWM9QtPF48scGfvfQtvw5C4LKRNHDLd8KfQce9PeTQS4nZeB
-...
 ```

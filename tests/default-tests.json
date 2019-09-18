@@ -4,7 +4,7 @@
         "desc": "Consensus in a perfect environment.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 5000,
+        "tx_round": 3000,
         "tx_sleep": 400,
         "phases":
         [
@@ -19,7 +19,7 @@
         "desc": "Runs with normal network delays and transactions.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 5000,
+        "tx_round": 3000,
         "tx_sleep": 400,
         "phases":
         [
@@ -70,7 +70,7 @@
         "desc": "Simulates failure in #3 and #6 to test consensus tolerance, then restores failed nodes.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 5000,
+        "tx_round": 3000,
         "tx_sleep": 400,
         "phases":
         [
@@ -149,7 +149,7 @@
         "desc": "poor network performance.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 5000,
+        "tx_round": 3000,
         "tx_sleep": 400,
         "phases":
         [

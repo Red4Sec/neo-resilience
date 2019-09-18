@@ -31,7 +31,7 @@ class Batch(object):
 
     def save_test_result(self, test):
         nodes = ['node-1', 'node-2', 'node-3', 'node-4', 'node-5', 'node-6', 'node-7']
-        initial_block_count = 12710
+        initial_block_count = 78
         testdir = os.path.join(self.reportdir, test['name'])
 
         if not os.path.isdir(testdir):

@@ -2,7 +2,7 @@
     {
         "name": "consensus-perfect",
         "desc": "Quick Consensus test in a perfect environment.",
-        "start-delay": 40,
+        "start-delay": 35,
         "tx": false,
         "tx_round": 3000,
         "tx_sleep": 400,
@@ -17,7 +17,7 @@
     {
         "name": "consensus-normal",
         "desc": "Quick Consensus test in a normal environment.",
-        "start-delay": 40,
+        "start-delay": 35,
         "tx": true,
         "tx_round": 1000,
         "tx_sleep": 100,

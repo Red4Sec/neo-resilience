@@ -27,7 +27,6 @@ RUN wget -O /opt/neo-cli.zip "https://github.com/neo-project/neo-cli/releases/do
 #    rm /opt/SimplePolicy.zip
 
 ADD ./chain /opt/neo-cli/Chain_00AEBED3
-#COPY ./neo-cli-txgen/ /opt/neo-cli/
 COPY ./plugins/txgen/ /opt/neo-cli/Plugins/
 
 WORKDIR /opt/neo-cli

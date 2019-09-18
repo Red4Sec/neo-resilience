@@ -2,14 +2,14 @@
     {
         "name": "low-tx-load",
         "desc": "Test low transaction load.",
-        "start-delay": 50,
+        "start-delay": 35,
         "tx": true,
         "tx_round": 5000,
-        "tx_sleep": 400,
+        "tx_sleep": 300,
         "phases":
         [
             {
-                "duration": 550,
+                "duration": 900,
                 "config": {
                     "node-1": {
                         "delay": [60, 200],
@@ -53,14 +53,14 @@
     {
         "name": "high-tx-load",
         "desc": "Test high transaction load.",
-        "start-delay": 50,
+        "start-delay": 35,
         "tx": true,
-        "tx_round": 2000,
-        "tx_sleep": 50,
+        "tx_round": 1000,
+        "tx_sleep": 10,
         "phases":
         [
             {
-                "duration": 550,
+                "duration": 900,
                 "config": {
                     "node-1": {
                         "delay": [60, 200],
