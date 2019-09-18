@@ -286,7 +286,6 @@ namespace Neo.Plugins
 
                 var from = _sources[i];
                 var to = _destinations[i];
-                long fee = _rand.Next(250_000_000, 800_000_000);
                 var option = _rand.Next(1, 3);
 
                 switch (option)
@@ -297,7 +296,7 @@ namespace Neo.Plugins
                             var neo = BigDecimal.Parse(_rand.Next(1, 5).ToString(), 0);
                             try
                             {
-                                Send(NEO, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
+                                Send(NEO, from.ScriptHash, to.ScriptHash, neo.ToString());
                                 Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
                             }
                             catch (Exception ex)
@@ -312,7 +311,7 @@ namespace Neo.Plugins
                             var gas = new BigDecimal(new BigInteger(_rand.Next(1, 100_000_000)), 8);
                             try
                             {
-                                Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
+                                Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString());
                                 Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
                             }
                             catch (Exception ex)
@@ -368,7 +367,7 @@ namespace Neo.Plugins
             return false;
         }
 
-        private bool Send(AssetDescriptor asset, UInt160 from, UInt160 to, string amount, long fee)
+        private bool Send(AssetDescriptor asset, UInt160 from, UInt160 to, string amount, long fee = 0)
         {
             var value = BigDecimal.Parse(amount, asset.Decimals);
 
