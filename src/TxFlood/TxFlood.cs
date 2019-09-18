@@ -152,8 +152,6 @@ namespace Neo.Plugins
 
         public bool Launch()
         {
-            if (!InitWallet()) return false;
-
             if (_task?.Status == TaskStatus.Running)
             {
                 Debug("Already running");
@@ -165,6 +163,7 @@ namespace Neo.Plugins
             {
                 Debug("Start sender");
                 Thread.Sleep(SLEEP_START);
+                if (!InitWallet()) return;
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
