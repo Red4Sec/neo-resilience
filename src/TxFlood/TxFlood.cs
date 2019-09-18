@@ -118,25 +118,25 @@ namespace Neo.Plugins
                 case "launch": Launch(); return true;
                 case "balances":
                     {
-                        if (!InitWallet()) return false;
+                        if (!InitWallet()) return true;
                         Balances(args);
                         return true;
                     }
                 case "distribute":
                     {
-                        if (!InitWallet()) return false;
+                        if (!InitWallet()) return true;
                         Distribute(args);
                         return true;
                     }
                 case "collect":
                     {
-                        if (!InitWallet()) return false;
+                        if (!InitWallet()) return true;
                         Collect(args);
                         return true;
                     }
                 case "flood":
                     {
-                        if (!InitWallet()) return false;
+                        if (!InitWallet()) return true;
                         Flood();
                         return true;
                     }
