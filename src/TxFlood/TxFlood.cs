@@ -294,7 +294,7 @@ namespace Neo.Plugins
                     case 1:
                         {
                             // NEO
-                            var neo = BigDecimal.Parse(_rand.Next(1, 10).ToString(), 0);
+                            var neo = BigDecimal.Parse(_rand.Next(1, 5).ToString(), 0);
                             try
                             {
                                 Send(NEO, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
@@ -309,7 +309,7 @@ namespace Neo.Plugins
                     case 2:
                         {
                             // GAS
-                            var gas = new BigDecimal(new BigInteger(_rand.Next(10000000, 900000000)), 8);
+                            var gas = new BigDecimal(new BigInteger(_rand.Next(1, 100_000_000)), 8);
                             try
                             {
                                 Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
