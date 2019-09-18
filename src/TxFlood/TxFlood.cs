@@ -19,12 +19,12 @@ namespace Neo.Plugins
         private readonly Random _rand;
         private readonly Type _sendDirectlyType;
         private readonly FieldInfo _sendDirectlyField;
-        private readonly AssetDescriptor NEO, GAS;
 
         private Wallet Wallet => System?.RpcServer?.Wallet;
         private Task _task;
         private long _taskRun = 0;
         private WalletAccount[] _sources, _destinations;
+        private AssetDescriptor NEO, GAS;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
 
@@ -41,9 +41,6 @@ namespace Neo.Plugins
         public TxFlood() : base()
         {
             _rand = new Random();
-
-            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
-            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
             // This is used for relay directly without enter in our mempool
 
@@ -264,6 +261,9 @@ namespace Neo.Plugins
                 Console.WriteLine("no wallet or rpc disabled");
                 return false;
             }
+
+            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
+            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
             _sources = Wallet.GetAccounts().Skip(1).ToArray();
             _destinations = _sources.OrderByDescending(x => x.ScriptHash).ToArray();
