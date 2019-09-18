@@ -266,7 +266,7 @@ namespace Neo.Plugins
             GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
             _sources = Wallet.GetAccounts().Skip(1).ToArray();
-            _destinations = _sources.OrderByDescending(x => x.ScriptHash).ToArray();
+            _destinations = _sources.Skip(1).Concat(_sources.Take(1)).ToArray();
 
             // Warm up
 
