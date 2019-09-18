@@ -216,14 +216,9 @@ namespace Neo.Plugins
             var value = BigDecimal.Parse(args[1], 0);
             var org = Wallet.GetAccounts().First().Address.ToScriptHash();
             var dest = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
-            long fee = 300000000;
+            long fee = 0; // 300_000_000;
 
-            if (args[2].ToLower() == "gas")
-            {
-                return SendMany(GAS, org, dest, value.ToString(), fee);
-            }
-
-            return SendMany(NEO, org, dest, value.ToString(), fee);
+            return SendMany(args[2].ToLower() == "gas" ? GAS : NEO, org, dest, value, fee);
         }
 
         private bool Collect(string[] args)
@@ -398,9 +393,9 @@ namespace Neo.Plugins
             return SignAndRelay(tx);
         }
 
-        private bool SendMany(AssetDescriptor asset, UInt160 from, UInt160[] to, string amount, long fee)
+        private bool SendMany(AssetDescriptor asset, UInt160 from, UInt160[] to, BigDecimal amount, long fee)
         {
-            var value = BigDecimal.Parse(amount, asset.Decimals);
+            var value = BigDecimal.Parse(amount.ToString(), asset.Decimals);
 
             if (to.Length == 0 || value.Sign <= 0 || fee < 0)
             {
