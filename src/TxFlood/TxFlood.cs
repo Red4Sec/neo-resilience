@@ -223,10 +223,10 @@ namespace Neo.Plugins
 
             if (args[2].ToLower() == "gas")
             {
-                return SendMany(NativeContract.GAS.Hash, org, dest, value.ToString(), fee);
+                return SendMany(GAS, org, dest, value.ToString(), fee);
             }
 
-            return SendMany(NativeContract.NEO.Hash, org, dest, value.ToString(), fee);
+            return SendMany(NEO, org, dest, value.ToString(), fee);
         }
 
         private bool Collect(string[] args)
@@ -398,10 +398,9 @@ namespace Neo.Plugins
             return SignAndRelay(tx);
         }
 
-        private bool SendMany(UInt160 assetId, UInt160 from, UInt160[] to, string amount, long fee)
+        private bool SendMany(AssetDescriptor asset, UInt160 from, UInt160[] to, string amount, long fee)
         {
-            var descriptor = new AssetDescriptor(assetId);
-            var value = BigDecimal.Parse(amount, descriptor.Decimals);
+            var value = BigDecimal.Parse(amount, asset.Decimals);
 
             if (to.Length == 0 || value.Sign <= 0 || fee < 0)
             {
@@ -415,7 +414,7 @@ namespace Neo.Plugins
             {
                 outputs[i] = new TransferOutput
                 {
-                    AssetId = assetId,
+                    AssetId = asset.AssetId,
                     Value = value,
                     ScriptHash = to[i]
                 };
