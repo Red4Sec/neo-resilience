@@ -16,13 +16,15 @@ namespace Neo.Plugins
 {
     public class TxFlood : Plugin
     {
+        private readonly Random _rand;
+        private readonly Type _sendDirectlyType;
+        private readonly FieldInfo _sendDirectlyField;
+        private readonly AssetDescriptor NEO, GAS;
+
         private Wallet Wallet => System?.RpcServer?.Wallet;
         private Task _task;
         private long _taskRun = 0;
-        private readonly Random _rand;
         private WalletAccount[] _sources, _destinations;
-        private Type _sendDirectlyType;
-        private FieldInfo _sendDirectlyField;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
 
@@ -39,6 +41,9 @@ namespace Neo.Plugins
         public TxFlood() : base()
         {
             _rand = new Random();
+
+            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
+            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
             // This is used for relay directly without enter in our mempool
 
@@ -202,8 +207,8 @@ namespace Neo.Plugins
                     }
                 }
             }
-            Console.WriteLine("Total    NEO: " + Wallet.GetAvailable(NativeContract.NEO.Hash) + "    GAS: " + Wallet.GetAvailable(NativeContract.GAS.Hash));
 
+            Console.WriteLine("Total    NEO: " + Wallet.GetAvailable(NativeContract.NEO.Hash) + "    GAS: " + Wallet.GetAvailable(NativeContract.GAS.Hash));
             return true;
         }
 
@@ -232,13 +237,13 @@ namespace Neo.Plugins
             var sources = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
             long fee = 250000000;
 
-            var assetId = args[1].ToLower() == "gas" ? NativeContract.GAS.Hash : NativeContract.NEO.Hash;
+            var assetId = args[1].ToLower() == "gas" ? GAS : NEO;
 
             foreach (var dir in sources)
             {
-                var balance = Wallet.GetBalance(assetId, dir);
+                var balance = Wallet.GetBalance(assetId.AssetId, dir);
 
-                if (assetId == NativeContract.GAS.Hash)
+                if (assetId == GAS)
                 {
                     var bi = BigInteger.Subtract(balance.Value, fee);
                     balance = new BigDecimal(bi, 8);
@@ -275,7 +280,7 @@ namespace Neo.Plugins
             //var contract = UInt160.Parse(CONTRACT);
             Console.WriteLine();
 
-            for (int i = 0; i < _sources.Count(); i++)
+            for (int i = 0; i < _sources.Length; i++)
             {
                 if (Interlocked.Read(ref _taskRun) == 0) return true;
 
@@ -290,16 +295,30 @@ namespace Neo.Plugins
                         {
                             // NEO
                             var neo = BigDecimal.Parse(_rand.Next(1, 10).ToString(), 0);
-                            Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
-                            Send(NativeContract.NEO.Hash, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
+                            try
+                            {
+                                Send(NEO, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
+                                Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo + $" [ERROR:{ex.ToString()}]");
+                            }
                             break;
                         }
                     case 2:
                         {
                             // GAS
                             var gas = new BigDecimal(new BigInteger(_rand.Next(10000000, 900000000)), 8);
-                            Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
-                            Send(NativeContract.GAS.Hash, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
+                            try
+                            {
+                                Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
+                                Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas + $" [ERROR:{ex.ToString()}]");
+                            }
                             break;
                         }
                     case 3:
@@ -349,10 +368,9 @@ namespace Neo.Plugins
             return false;
         }
 
-        private bool Send(UInt160 assetId, UInt160 from, UInt160 to, string amount, long fee)
+        private bool Send(AssetDescriptor asset, UInt160 from, UInt160 to, string amount, long fee)
         {
-            var descriptor = new AssetDescriptor(assetId);
-            var value = BigDecimal.Parse(amount, descriptor.Decimals);
+            var value = BigDecimal.Parse(amount, asset.Decimals);
 
             if (value.Sign <= 0 || fee < 0)
             {
@@ -364,7 +382,7 @@ namespace Neo.Plugins
             {
                 new TransferOutput
                 {
-                    AssetId = assetId,
+                    AssetId = asset.AssetId,
                     Value = value,
                     ScriptHash = to
                 }
