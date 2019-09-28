@@ -121,7 +121,7 @@ if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
 fi
 
 # Build
-dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj -o neo-cli -c Release -r ubuntu.16.04-x64
+dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli -c Release -r ubuntu.16.04-x64
 #dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
 
 # Output binaries
