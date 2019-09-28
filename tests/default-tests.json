@@ -4,12 +4,12 @@
         "desc": "Consensus in a perfect environment.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 3000,
-        "tx_sleep": 400,
+        "tx_round": 1000,
+        "tx_sleep": 500,
         "phases":
         [
             {
-                "duration": 565,
+                "duration": 600,
                 "config": {}
             }
         ]
@@ -19,12 +19,12 @@
         "desc": "Runs with normal network delays and transactions.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 3000,
-        "tx_sleep": 400,
+        "tx_round": 2000,
+        "tx_sleep": 200,
         "phases":
         [
             {
-                "duration": 565,
+                "duration": 600,
                 "config": {
                     "node-1": {
                         "delay": [60, 200],
@@ -70,12 +70,12 @@
         "desc": "Simulates failure in #3 and #6 to test consensus tolerance, then restores failed nodes.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 3000,
-        "tx_sleep": 400,
+        "tx_round": 2000,
+        "tx_sleep": 200,
         "phases":
         [
             {
-                "duration": 70,
+                "duration": 40,
                 "config": {
                     "node-1": {
                         "delay": [60, 200],
@@ -128,7 +128,7 @@
                 }
             },
             {
-                "duration": 230,
+                "duration": 295,
                 "config": {
                     "node-3": {
                         "delay": [60, 200],
@@ -149,12 +149,12 @@
         "desc": "poor network performance.",
         "start-delay": 35,
         "tx": true,
-        "tx_round": 3000,
-        "tx_sleep": 400,
+        "tx_round": 2000,
+        "tx_sleep": 100,
         "phases":
         [
             {
-                "duration": 300,
+                "duration": 600,
                 "config": {
                     "node-1": {
                         "delay": [200, 500],
