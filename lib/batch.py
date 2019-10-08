@@ -13,7 +13,7 @@ class Batch(object):
     buildlog = ''
 
     def __init__(self, dc, args):
-        self.id = int(time())
+        self.id = args.id
         self.dc = dc
         self.report = Report(self.id, args)
 

@@ -38,7 +38,7 @@ git clone https://github.com/Red4Sec/neo-resilience
 
 ## Usage
 ```
-usage: neo-resilience.py [-h] [-t TESTS_FILE] [-c CUSTOM_BUILD]
+usage: neo-resilience.py [-h] [-t TESTS_FILE] [-c CUSTOM_BUILD] [-i ID]
                          [--source-neo SOURCE_NEO] [--source-cli SOURCE_CLI]
                          [--source-vm SOURCE_VM] [--source-plg SOURCE_PLG]
                          [--branch-neo BRANCH_NEO] [--branch-cli BRANCH_CLI]
@@ -52,6 +52,7 @@ optional arguments:
 
   -t TESTS_FILE, --tests-file TESTS_FILE          JSON tests file
   -c CUSTOM_BUILD, --custom-build CUSTOM_BUILD    ZIP neo-cli
+  -i ID, --id ID                                  Job ID
 
   --source-neo SOURCE_NEO     Use a specific neo repo
   --source-cli SOURCE_CLI     Use a specific neo-cli repo

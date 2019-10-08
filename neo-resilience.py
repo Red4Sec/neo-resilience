@@ -11,7 +11,7 @@ import json
 import zipfile
 import signal
 import sys
-from time import sleep
+from time import time, sleep
 from os import path
 from shutil import copyfile
 from lib import dockercontrol
@@ -21,8 +21,8 @@ from lib import batch
 
 def show_banner():
     banner = '''\033[1;32m
-                                  _                   
-     ___ ___ ___    ___ ___ ___ _| |_ ___ ___ ___ ___ 
+                                  _
+     ___ ___ ___    ___ ___ ___ _| |_ ___ ___ ___ ___
     |   | -_| . |  |  _| -_|_ -| | | | -_|   |  _| -_|
     |_|_|___|___|  |_| |___|___|_|_|_|___|_|_|___|___|
     \033[0;0m
@@ -43,6 +43,7 @@ parser = argparse.ArgumentParser(description='neo-resilience - operational testi
 
 parser.add_argument('-t', '--tests-file', type=str, default='tests/default-tests.json', help='JSON tests file')
 parser.add_argument('-c', '--custom-build', type=str, help='ZIP neo-cli')
+parser.add_argument('-i', '--id', type=int, default=int(time()), help='Job ID')
 
 parser.add_argument('--source-neo', type=str, help='Use a specific neo repo')
 parser.add_argument('--source-cli', type=str, help='Use a specific neo-cli repo')
