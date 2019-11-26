@@ -125,8 +125,8 @@ dotnet publish /src/neo-cli/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli
 #dotnet publish /src/neo-plugins/SimplePolicy/SimplePolicy.csproj -o SimplePolicy -c Release -r ubuntu.16.04-x64 -f netstandard2.0
 
 # Output binaries
-if [[ -d "/src/neo-cli/neo-cli/neo-cli/" ]]; then
-    mv /src/neo-cli/neo-cli/neo-cli/* /build/neo-cli
+if [[ -d "/src/neo-cli/neo-cli/bin/Release/netcoreapp3.0/ubuntu.16.04-x64/" ]]; then
+    mv /src/neo-cli/neo-cli/bin/Release/netcoreapp3.0/ubuntu.16.04-x64/* /build/neo-cli
 fi
 #mkdir /build/neo-cli/Plugins
 #mv /src/neo-plugins/SimplePolicy/bin/Release/netstandard2.0/ubuntu.16.04-x64/* /build/neo-cli/Plugins
