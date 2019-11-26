@@ -89,8 +89,8 @@ if [[ $PR_NEO -ne 0 || $CODE_NEO -eq 1  || $CODE_VM -eq 1 || $BRANCH_NEO != "mas
         git checkout pr_$PR_NEO
     fi
     dotnet remove /src/neo-cli/neo-cli/neo-cli.csproj package neo
-    dotnet sln /src/neo-cli/neo-cli.sln add /src/neo/neo/neo.csproj
-    dotnet add /src/neo-cli/neo-cli/neo-cli.csproj reference /src/neo/neo/neo.csproj
+    dotnet sln /src/neo-cli/neo-cli.sln add /src/neo/src/neo/neo.csproj
+    dotnet add /src/neo-cli/neo-cli/neo-cli.csproj reference /src/neo/src/neo/neo.csproj
 fi
 
 # neo-vm
@@ -101,9 +101,9 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
         git fetch origin refs/pull/$PR_VM/head:pr_$PR_VM
         git checkout pr_$PR_VM
     fi
-    dotnet remove /src/neo/neo/neo.csproj package neo.vm
+    dotnet remove /src/neo/src/neo/neo.csproj package neo.vm
     dotnet sln /src/neo-cli/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
-    dotnet add /src/neo/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
+    dotnet add /src/neo/src/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
 # Documentation
