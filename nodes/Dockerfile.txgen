@@ -18,15 +18,16 @@ RUN apt-get update && apt-get install -y \
 RUN rm -rf /tmp/* &&\
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-RUN wget -O /opt/neo-cli.zip "https://github.com/neo-project/neo-cli/releases/download/v$NEO_CLI_VERSION/neo-cli-linux-x64.zip" && \
-    unzip -q -d /opt /opt/neo-cli.zip && \
-    rm /opt/neo-cli.zip
+#RUN wget -O /opt/neo-cli.zip "https://github.com/neo-project/neo-cli/releases/download/v$NEO_CLI_VERSION/neo-cli-linux-x64.zip" && \
+#    unzip -q -d /opt /opt/neo-cli.zip && \
+#    rm /opt/neo-cli.zip
 
 #RUN wget -O /opt/SimplePolicy.zip "https://github.com/neo-project/neo-plugins/releases/download/v$NEO_PLG_VERSION/SimplePolicy.zip" && \
 #    unzip -q -d /opt/neo-cli /opt/SimplePolicy.zip && \
 #    rm /opt/SimplePolicy.zip
 
 ADD ./chain /opt/neo-cli/Chain_00AEBED3
+COPY ./neo-cli-txgen/ /opt/neo-cli/
 COPY ./plugins/txgen/ /opt/neo-cli/Plugins/
 
 WORKDIR /opt/neo-cli
