@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1.4-runtime-bionic
+FROM mcr.microsoft.com/dotnet/core/runtime:3.0-bionic
 
 LABEL maintainer="https://github.com/Red4Sec"
 
