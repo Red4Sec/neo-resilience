@@ -65,6 +65,16 @@ class Batch(object):
             blocks = nodehelper.get_node_height(self.dc, node) - initial_block_count
             self.report.tests[test['name']]['blocks'][node] = blocks
 
+        if(hasattr(test, 'expected') and test['expected'] > 0):
+            min_block = min(self.report.tests[test['name']]['blocks'].values())
+            if(min_block >= test['expected']):
+                self.report.tests[test['name']]['result'] = True
+            else:
+                self.report.tests[test['name']]['result'] = False
+        else:
+            self.report.tests[test['name']]['result'] = None
+
+
 
     def get_report(self):
         return json.dumps(self.report.__dict__)
