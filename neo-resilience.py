@@ -139,7 +139,7 @@ for test in test_batch:
     batch.save_test_result(test)
     dc.neo_net_down()
     print('     Generated blocks:\n        {}'.format(batch.report.tests[test['name']]['blocks']))
-    print('     Pass: {}'.format(test['result']))
+    print('     Pass: {}'.format(batch.report.tests[test['name']]['result']))
 
 print('[i] Saved report {}'.format(batch.reportdir + '/report.json'))
 batch.save_report()
