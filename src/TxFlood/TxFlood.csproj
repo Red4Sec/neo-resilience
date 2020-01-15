@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>Neo.Plugins</RootNamespace>
     <Version>2.10.1</Version>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Neo" Version="3.0.0-CI00151" />
+    <PackageReference Include="Neo" Version="3.0.0-CI00847" />
   </ItemGroup>
 
 </Project>

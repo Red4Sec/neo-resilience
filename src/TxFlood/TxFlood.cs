@@ -5,12 +5,15 @@ using Neo.Network.P2P.Payloads;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
+using Neo.Wallets.NEP6;
+using Neo.Wallets.SQLite;
 using System;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using SIO = System.IO;
 
 namespace Neo.Plugins
 {
@@ -20,20 +23,20 @@ namespace Neo.Plugins
         private readonly Type _sendDirectlyType;
         private readonly FieldInfo _sendDirectlyField;
 
-        private Wallet Wallet => System?.RpcServer?.Wallet;
+        private readonly Wallet Wallet;
         private Task _task;
         private long _taskRun = 0;
         private WalletAccount[] _sources, _destinations;
         private AssetDescriptor NEO, GAS;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
+        private const string WALLET_FILE = "wallet.json";
+        private const string WALLET_PASS = "pass";
 
         private int SLEEP_START = 51000;
         private int SLEEP_ROUND = 5000;
         private int SLEEP_TX = 500;
         private string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
-
-        public override void Configure() { }
 
         /// <summary>
         /// Constructor
@@ -52,6 +55,29 @@ namespace Neo.Plugins
             _sendDirectlyField = _sendDirectlyType.GetFields(BindingFlags.Public | BindingFlags.Instance)
                 .Where(u => u.Name == "Inventory")
                 .FirstOrDefault();
+
+            // Open wallet
+
+            Wallet = OpenWallet(WALLET_FILE, WALLET_PASS);
+        }
+
+        private static Wallet OpenWallet(string path, string password)
+        {
+            if (!SIO.File.Exists(path)) throw new SIO.FileNotFoundException();
+            switch (SIO.Path.GetExtension(path))
+            {
+                case ".db3":
+                    {
+                        return UserWallet.Open(path, password);
+                    }
+                case ".json":
+                    {
+                        var nep6wallet = new NEP6Wallet(path);
+                        nep6wallet.Unlock(password);
+                        return nep6wallet;
+                    }
+                default: throw new NotSupportedException();
+            }
         }
 
         private bool UpdateEnvVar(ref int val, string varName)
