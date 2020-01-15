@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/core/runtime:3.0-bionic
 
 LABEL maintainer="https://github.com/Red4Sec"
 
-ARG NEO_CLI_VERSION="3.0.0-preview1"
-ARG NEO_PLG_VERSION="3.0.0-preview1"
+ARG NEO_NODE_VERSION="3.0.0-preview1"
+ARG NEO_MODS_VERSION="3.0.0-preview1"
 
 ENV SLEEP_TX 0
 ENV DEBIAN_FRONTEND noninteractive
@@ -18,17 +18,19 @@ RUN apt-get update && apt-get install -y \
 RUN rm -rf /tmp/* &&\
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-#RUN wget -O /opt/neo-cli.zip "https://github.com/neo-project/neo-cli/releases/download/v$NEO_CLI_VERSION/neo-cli-linux-x64.zip" && \
+## FROM RELEASE
+#RUN wget -O /opt/neo-cli.zip "https://github.com/neo-project/neo-node/releases/download/v$NEO_NODE_VERSION/neo-cli-linux-x64.zip" && \
 #    unzip -q -d /opt /opt/neo-cli.zip && \
 #    rm /opt/neo-cli.zip
+#RUN wget -O /opt/SystemLog.zip "https://github.com/neo-project/neo-modules/releases/download/v$NEO_MODS_VERSION/SystemLog.zip" && \
+#    unzip -q -d /opt/neo-cli /opt/SystemLog.zip && \
+#    rm /opt/SystemLog.zip
 
-#RUN wget -O /opt/SimplePolicy.zip "https://github.com/neo-project/neo-plugins/releases/download/v$NEO_PLG_VERSION/SimplePolicy.zip" && \
-#    unzip -q -d /opt/neo-cli /opt/SimplePolicy.zip && \
-#    rm /opt/SimplePolicy.zip
+## FROM SOURCE
+COPY ./neo-cli/ /opt/neo-cli/
 
-ADD ./chain /opt/neo-cli/Chain_00AEBED3
-COPY ./neo-cli-txgen/ /opt/neo-cli/
 COPY ./plugins/txgen/ /opt/neo-cli/Plugins/
+ADD ./chain /opt/neo-cli/Chain_00AEBED3
 
 WORKDIR /opt/neo-cli
 CMD ["dotnet", "neo-cli.dll", "--rpc"]

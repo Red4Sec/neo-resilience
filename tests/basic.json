@@ -1,0 +1,17 @@
+[
+    {
+        "name": "basic",
+        "desc": "basic test.",
+        "start-delay": 30,
+        "tx": false,
+        "tx_round": 1000,
+        "tx_sleep": 500,
+        "phases":
+        [
+            {
+                "duration": 20,
+                "config": {}
+            }
+        ]
+    }
+]

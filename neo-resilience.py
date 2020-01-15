@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Neo Resilience
-# Version: 0.4.0
+# Version: 0.4.3
 # https://github.com/red4sec/neo-resilience
 
 
@@ -48,17 +48,17 @@ parser.add_argument('-i', '--id', type=int, default=int(time()), help='Job ID')
 parser.add_argument('--source-neo', type=str, help='Use a specific neo repo')
 parser.add_argument('--source-cli', type=str, help='Use a specific neo-cli repo')
 parser.add_argument('--source-vm', type=str, help='Use a specific neo-vm repo')
-parser.add_argument('--source-plg', type=str, help='Use a specific plugins repo')
+parser.add_argument('--source-mods', type=str, help='Use a specific neo modules repo')
 
 parser.add_argument('--branch-neo', type=str, default='master', help='Use a specific neo branch')
 parser.add_argument('--branch-cli', type=str, default='master', help='Use a specific neo-cli branch')
 parser.add_argument('--branch-vm', type=str, default='master', help='Use a specific neo-vm branch')
-parser.add_argument('--branch-plg', type=str, default='master', help='Use a specific plugins branch')
+parser.add_argument('--branch-mods', type=str, default='master', help='Use a specific neo modules branch')
 
 parser.add_argument('--pr-neo', type=int, default=0, help='Use a specific neo pull request')
 parser.add_argument('--pr-cli', type=int, default=0, help='Use a specific neo-cli pull request')
 parser.add_argument('--pr-vm', type=int, default=0, help='Use a specific neo-vm pull request')
-parser.add_argument('--pr-plg', type=int, default=0, help='Use a specific neo plugins pull request')
+parser.add_argument('--pr-mods', type=int, default=0, help='Use a specific neo modules pull request')
 
 parser.add_argument('--code-neo', action='store_true', help='Build using github neo code as reference')
 parser.add_argument('--code-vm', action='store_true', help='Build using github neo-vm code as reference')
@@ -89,8 +89,8 @@ else:
         dc.create_builder()
 
     print('[+] Building neo-cli')
-    print('     Branch: neo {}, neo-cli {}, neo-vm {}, plugins {}'.format(args.branch_neo, args.branch_cli, args.branch_vm, args.branch_plg))
-    print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, plugins {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_plg))
+    print('     Branch: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.branch_neo, args.branch_cli, args.branch_vm, args.branch_mods))
+    print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_mods))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
     buildlog = dc.run_builder(args)
     batch.savelog(buildlog)

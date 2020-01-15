@@ -23,15 +23,15 @@ class DockerControl(object):
         if (args.source_neo): build_arguments += ' -w {}'.format(args.source_neo)
         if (args.source_cli): build_arguments += ' -x {}'.format(args.source_cli)
         if (args.source_vm): build_arguments += ' -y {}'.format(args.source_vm)
-        if (args.source_plg): build_arguments += ' -z {}'.format(args.source_plg)
+        if (args.source_mods: build_arguments += ' -z {}'.format(args.source_mods)
         if (args.branch_neo): build_arguments += ' -n {}'.format(args.branch_neo)
         if (args.branch_cli): build_arguments += ' -c {}'.format(args.branch_cli)
         if (args.branch_vm): build_arguments += ' -v {}'.format(args.branch_vm)
-        if (args.branch_plg): build_arguments += ' -p {}'.format(args.branch_plg)
+        if (args.branch_mods): build_arguments += ' -p {}'.format(args.branch_mods)
         if (args.pr_neo): build_arguments += ' -o {}'.format(args.pr_neo)
         if (args.pr_cli): build_arguments += ' -i {}'.format(args.pr_cli)
         if (args.pr_vm): build_arguments += ' -m {}'.format(args.pr_vm)
-        if (args.pr_plg): build_arguments += ' -g {}'.format(args.pr_plg)
+        if (args.pr_mods): build_arguments += ' -g {}'.format(args.pr_mods)
         if (args.code_neo): build_arguments += ' -a'
         if (args.code_vm): build_arguments += ' -b'
         if (args.analysis): build_arguments += ' -q'
@@ -43,11 +43,19 @@ class DockerControl(object):
 
 
     def create_node_image(self):
-        return self.client.images.build(path='./nodes', rm=True, nocache=True, tag='neo-node')
+        try:
+            return self.client.images.build(path='./nodes', rm=True, nocache=True, tag='neo-node')
+        except docker.errors.BuildError as e:
+            print('[!] Node image build failed:\n{}'.format(e.msg))
+            quit()
 
 
     def create_txgen_image(self):
-        return self.client.images.build(path='./nodes', dockerfile='Dockerfile.txgen', rm=True, tag='neo-txgen')
+        try:
+            return self.client.images.build(path='./nodes', dockerfile='Dockerfile.txgen', rm=True, tag='neo-txgen')
+        except docker.errors.BuildError as e:
+            print('[!] Tx image build failed:\n{}'.format(e.msg))
+            quit()
 
 
     def neo_net_down(self):
@@ -65,7 +73,7 @@ class DockerControl(object):
 
     def node_exec(self, node_name, cmd):
         n = self.client.containers.get(node_name)
-        return n.exec_run(cmd)
+        return n.exec_run(cmd) if n.status == 'running' else None
 
 
     def copyfile(self, node_name, org, dst):

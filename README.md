@@ -57,17 +57,17 @@ optional arguments:
   --source-neo SOURCE_NEO     Use a specific neo repo
   --source-cli SOURCE_CLI     Use a specific neo-cli repo
   --source-vm SOURCE_VM       Use a specific neo-vm repo
-  --source-plg SOURCE_PLG     Use a specific plugins repo
+  --source-mods SOURCE_MODS   Use a specific neo modules repo
 
   --branch-neo BRANCH_NEO     Use a specific neo branch
   --branch-cli BRANCH_CLI     Use a specific neo-cli branch
   --branch-vm BRANCH_VM       Use a specific neo-vm branch
-  --branch-plg BRANCH_PLG     Use a specific plugins branch
+  --branch-mods BRANCH_MODS   Use a specific neo modules branch
 
   --pr-neo PR_NEO             Use a specific neo pull request
   --pr-cli PR_CLI             Use a specific neo-cli pull request
   --pr-vm PR_VM               Use a specific neo-vm pull request
-  --pr-plg PR_PLG             Use a specific neo plugins pull request
+  --pr-mods PR_MODS           Use a specific neo modules pull request
 
   --code-neo                  Build using github neo code as reference
   --code-vm                   Build using github neo-vm code as reference

@@ -38,7 +38,7 @@ def get_node_height(dc, node):
     cmd = 'curl -s -S -X POST http://localhost:10332 -H \'Content-Type: application/json\' -d {}'.format(query)
     r = dc.node_exec(node, cmd)
 
-    if r.exit_code == 0:
+    if r and r.exit_code == 0:
         result = json.loads(r.output)
         if 'result' in result:
             block = result['result']

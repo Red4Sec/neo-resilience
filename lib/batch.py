@@ -31,7 +31,7 @@ class Batch(object):
 
     def save_test_result(self, test):
         nodes = ['node-1', 'node-2', 'node-3', 'node-4', 'node-5', 'node-6', 'node-7']
-        initial_block_count = 78
+        initial_block_count = 0
         testdir = os.path.join(self.reportdir, test['name'])
 
         if not os.path.isdir(testdir):
@@ -58,7 +58,7 @@ class Batch(object):
 
             node_logs = os.path.join(testdir, node + '_logs.tar')
             try:
-                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs/ConsensusService', node_logs)
+                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs_00AEBED3/ConsensusService', node_logs)
             except:
                 print('     Logs not found for {}'.format(node))
 

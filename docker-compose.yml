@@ -1,6 +1,7 @@
 version: '3.4'
 networks:
   neo-net:
+    # internal: true | driver: bridge
     internal: true
 services:
   node-1:
