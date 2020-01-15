@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1.4-runtime-bionic
+FROM mcr.microsoft.com/dotnet/core/runtime:3.0-bionic
 
 LABEL maintainer="https://github.com/Red4Sec"
 
@@ -15,7 +15,8 @@ RUN rm -rf /tmp/* &&\
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 ADD ./neo-cli /opt/neo-cli
-ADD ./chain /opt/neo-cli/Chain_00AEBED3
+#ADD ./chain /opt/neo-cli/Chain_00AEBED3
+ADD ./chain /opt/neo-cli/Data_LevelDB_00AEBED3
 COPY ./plugins/node/ /opt/neo-cli/Plugins/
 
 WORKDIR /opt/neo-cli
