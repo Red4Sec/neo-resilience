@@ -97,11 +97,11 @@ class Report(object):
             'branch_neo': args.branch_neo,
             'branch_cli': args.branch_cli,
             'branch_vm': args.branch_vm,
-            'branch_plg': args.branch_plg,
+            'branch_plg': args.branch_mods,
             'pr_neo': args.pr_neo,
             'pr_cli': args.pr_cli,
             'pr_vm': args.pr_vm,
-            'pr_plg': args.pr_plg,
+            'pr_plg': args.pr_mods,
             'code_neo': args.code_neo,
             'code_vm': args.code_vm,
             'custom_build': args.custom_build

@@ -23,7 +23,7 @@ class DockerControl(object):
         if (args.source_neo): build_arguments += ' -w {}'.format(args.source_neo)
         if (args.source_cli): build_arguments += ' -x {}'.format(args.source_cli)
         if (args.source_vm): build_arguments += ' -y {}'.format(args.source_vm)
-        if (args.source_mods: build_arguments += ' -z {}'.format(args.source_mods)
+        if (args.source_mods): build_arguments += ' -z {}'.format(args.source_mods)
         if (args.branch_neo): build_arguments += ' -n {}'.format(args.branch_neo)
         if (args.branch_cli): build_arguments += ' -c {}'.format(args.branch_cli)
         if (args.branch_vm): build_arguments += ' -v {}'.format(args.branch_vm)
