@@ -16,4 +16,8 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;  echo  ###  UPDATING &quot;$(TargetFileName)&quot; IN NODE PLUGINS  ###&#xD;&#xA;  copy /B /Y $(TargetDir)$(TargetFileName) ..\..\nodes\plugins\node\$(TargetFileName)&#xD;&#xA;)" />
+  </Target>
+
 </Project>
