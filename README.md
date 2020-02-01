@@ -1,22 +1,44 @@
-# Neo-Resilience
-Perform resistance and performance tests for specific NEO builds. It comes with a few batchs of tests, by default runs four predefined tests: consensus, faulty-nodes, normal and bad-day.
+<p align="center">
+  <a href="https://red4sec.com" target="_blank"><img src="https://red4sec.com/images/logo.png" width="200px"></a>
+</p>
+<h1 align="center">
+Neo-Resilience
+</h1>
 
+<p align="center">
+ Neo-Resilience platform tests resistance and performance for specific NEO builds.
+</p>
 
-## NEO 3.0 dev
-In continuous development to adapt to changes in NEO 3.0.
+## Table of Contents
+
+- [Features](#features)
+- [NEO 3](#neo-3)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
 
 ## Features
-- Build NEO from the Github code or from the custom compilation.
-- Allows selection of specific pull request, source or branch.
+
+- NEO blockchain from scratch.
+- Build from Github projects, custom repos or from local binaries.
+- Selection of specific pull request, source or branch.
 - Run custom tests that simulate different network behaviors.
+- Set of common tests.
 - Generate class diagrams and code documentation.
 - Generate detailed reports with test results.
 - ...
 
+## NEO 3
+
+In continuous development to adapt to changes in __NEO 3.x__.
+
+*NEO 2.x has been archived in branch [master-2.x](https://github.com/Red4Sec/neo-resilience/tree/master-2.x "master-2.x").*
+
 ## Requirements
 
 #### Docker
-```
+
+```console
 apt-get install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -24,19 +46,22 @@ apt-get install docker-ce
 ```
 
 #### Docker Compose
-```
+
+```console
 curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ```
 
 ## Installation
-```
+
+```console
 apt-get install git python3 python3-pip
 pip3 install docker
 git clone https://github.com/Red4Sec/neo-resilience
 ```
 
 ## Usage
+
 ```
 usage: neo-resilience.py [-h] [-t TESTS_FILE] [-c CUSTOM_BUILD] [-i ID]
                          [--source-neo SOURCE_NEO] [--source-cli SOURCE_CLI]
