@@ -7,13 +7,6 @@
       "Port": 10333,
       "WsPort": 10334
     },
-    "RPC": {
-      "BindAddress": "0.0.0.0",
-      "Port": 10332,
-      "SslCert": "",
-      "SslCertPassword": "",
-      "MaxGasInvoke": 50
-    },
     "UnlockWallet": {
       "Path": "wallet.json",
       "Password": "pass",
