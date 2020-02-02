@@ -32,8 +32,8 @@ def show_banner():
 
 def force_exit(signum, frame):
     print('\n[!] Aborting...\n')
-    dc.stop_interactive()
     dc.neo_net_down()
+    dc.stop_interactive()
     sys.exit(0)
 
 

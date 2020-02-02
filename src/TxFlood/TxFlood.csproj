@@ -11,4 +11,8 @@
     <PackageReference Include="Neo" Version="3.0.0-CI00847" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;  echo  ###  UPDATING &quot;$(TargetFileName)&quot; IN TXGEN PLUGINS  ###&#xD;&#xA;  copy /B /Y $(TargetDir)$(TargetFileName) ..\..\nodes\plugins\txgen\$(TargetFileName)&#xD;&#xA;)" />
+  </Target>
+
 </Project>
