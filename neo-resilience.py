@@ -68,7 +68,7 @@ parser.add_argument('--doc', action='store_true', help='Generate code documentat
 parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
-parser.add_argument('-i','--interactive-node', action='store_true', help='Run an interactive node')
+parser.add_argument('--skip-build', action='store_true', help='Skip neo-cli compilation')
 
 args = parser.parse_args()
 
@@ -96,6 +96,8 @@ else:
     print('     Branch: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.branch_neo, args.branch_cli, args.branch_vm, args.branch_mods))
     print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_mods))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
+    
+    if not args.skip_build:
     buildlog = dc.run_builder(args)
     batch.savelog(buildlog)
 
