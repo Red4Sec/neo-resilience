@@ -32,6 +32,7 @@ def show_banner():
 
 def force_exit(signum, frame):
     print('\n[!] Aborting...\n')
+    dc.stop_interactive()
     dc.neo_net_down()
     sys.exit(0)
 
@@ -67,9 +68,13 @@ parser.add_argument('--doc', action='store_true', help='Generate code documentat
 parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
+parser.add_argument('--skip-build', action='store_true', help='Skip neo-cli compilation')
+parser.add_argument('--interactive-node', action='store_true', help='Run an interactive node')
 
 args = parser.parse_args()
 
+if args.interactive_node:
+    args.show_output = False
 
 dc = dockercontrol.DockerControl()
 batch = batch.Batch(dc, args)
@@ -83,7 +88,7 @@ if(args.custom_build):
 
     copyfile(args.custom_build, path.join(batch.reportdir, path.basename(args.custom_build)))
 
-else:
+elif not args.skip_build:
     if not any(['neo-build:latest' in i.tags for i in dc.client.images.list()]):
         print('[i] Build image not found. Creating image ...')
         dc.create_builder()
@@ -92,14 +97,14 @@ else:
     print('     Branch: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.branch_neo, args.branch_cli, args.branch_vm, args.branch_mods))
     print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_mods))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
+    
     buildlog = dc.run_builder(args)
     batch.savelog(buildlog)
-
-    if not path.exists('nodes/neo-cli/neo-cli.dll'):
-        print('[!] Build failed. check {}'.format(batch.buildlog))
-        exit(1)
-
     print('[+] Build done {}'.format(batch.buildlog))
+
+if not path.exists('nodes/neo-cli/neo-cli.dll'):
+    print('[!] Binaries missing. check logs')
+    exit(1)
 
 
 print('[+] Creating Node image ...')
@@ -119,11 +124,15 @@ for test in test_batch:
     print('     Phases: {}'.format(len(test['phases'])))
     print('     Duration: {}s'.format(sum(p['duration'] for p in test['phases']) + test['start-delay']))
     print('     Transactions: {}'.format(test['tx']))
-    print('     Phases:')
 
     nodehelper.config_txgen(test['tx'], test['start-delay'], test['tx_round'], test['tx_sleep'])
     dc.neo_net_up(args.show_output)
+    if(args.interactive_node):
+        sleep(5)
+        print('     Interactive node -> docker exec -it node-interactive bash')
+        dc.start_interactive()
 
+    print('     Phases')
     print('        Network warm up - {}s'.format(test['start-delay']))
     sleep(test['start-delay'])
 
@@ -138,6 +147,8 @@ for test in test_batch:
 
     batch.save_test_result(test)
     dc.neo_net_down()
+    if(args.interactive_node):
+        dc.stop_interactive()
     print('     Generated blocks:\n        {}'.format(batch.report.tests[test['name']]['blocks']))
     print('     Pass: {}'.format(batch.report.tests[test['name']]['result']))
 

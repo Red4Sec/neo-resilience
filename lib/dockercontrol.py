@@ -16,7 +16,7 @@ class DockerControl(object):
 
 
     def run_builder(self, args):
-        path = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
+        volumes = {os.path.join(os.getcwd(),'nodes/neo-cli'): {'bind': '/build/neo-cli', 'mode': 'rw'}}
 
         # TODO: fix this mess
         build_arguments = ''
@@ -37,9 +37,9 @@ class DockerControl(object):
         if (args.analysis): build_arguments += ' -q'
         if (args.doc):
             build_arguments += ' -d'
-            path[os.path.join(os.getcwd(),'output/doc-neo-master-3.x')] = {'bind': '/doc/html', 'mode': 'rw'}
+            volumes[os.path.join(os.getcwd(),'output/doc-neo-master-3.x')] = {'bind': '/doc/html', 'mode': 'rw'}
 
-        return self.client.containers.run('neo-build:latest', build_arguments, remove=True, volumes=path)
+        return self.client.containers.run('neo-build:latest', build_arguments, remove=True, volumes=volumes)
 
 
     def create_node_image(self):
@@ -58,6 +58,28 @@ class DockerControl(object):
             quit()
 
 
+    def start_interactive(self):
+        path = os.getcwd()
+        volumes = {
+            os.path.join(path,'nodes/tmp'): {'bind': '/node-tmp', 'mode': 'rw'},
+            os.path.join(path,'nodes/configs/protocol.json'): {'bind': '/opt/neo-cli/protocol.json', 'mode': 'ro'},
+            os.path.join(path,'nodes/configs/config.txgen.json'): {'bind': '/opt/neo-cli/config.json', 'mode': 'ro'},
+            os.path.join(path,'nodes/wallets/wallet0.json'): {'bind': '/opt/neo-cli/wallet.json', 'mode': 'ro'}
+            }
+        node = self.client.containers.run('neo-node',['sleep 1d'], entrypoint=['/bin/sh','-c'], remove=True, detach=True, name='node-interactive', auto_remove=True, network='neo-resilience_neo-net', privileged=True, volumes=volumes)
+        bridge = [net for net in self.client.networks.list() if net.name == 'bridge'][0]
+        bridge.connect(node)
+        return True
+
+
+    def stop_interactive(self):
+        try:
+            node = self.client.containers.get('node-interactive')
+            return node.kill()
+        except:
+            return False
+
+
     def neo_net_down(self):
         return subprocess.Popen(['docker-compose', 'down'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT).wait()
 
@@ -72,13 +94,13 @@ class DockerControl(object):
 
 
     def node_exec(self, node_name, cmd):
-        n = self.client.containers.get(node_name)
-        return n.exec_run(cmd) if n.status == 'running' else None
+        node = self.client.containers.get(node_name)
+        return node.exec_run(cmd) if node.status == 'running' else None
 
 
     def copyfile(self, node_name, org, dst):
-        n = self.client.containers.get(node_name)
-        bits, _ = n.get_archive(org)
+        node = self.client.containers.get(node_name)
+        bits, _ = node.get_archive(org)
         stream = self.__generator_to_stream(bits)
         tar_file = tarfile.open(fileobj=stream, mode='r|*')
 
@@ -94,8 +116,8 @@ class DockerControl(object):
 
 
     def copy2tar(self, node_name, org, dst):
-        n = self.client.containers.get(node_name)
-        bits, _ = n.get_archive(org)
+        node = self.client.containers.get(node_name)
+        bits, _ = node.get_archive(org)
 
         with open(dst, 'wb') as f:
             for chunk in bits:
