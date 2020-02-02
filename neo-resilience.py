@@ -88,7 +88,7 @@ if(args.custom_build):
 
     copyfile(args.custom_build, path.join(batch.reportdir, path.basename(args.custom_build)))
 
-else:
+elif not args.skip_build:
     if not any(['neo-build:latest' in i.tags for i in dc.client.images.list()]):
         print('[i] Build image not found. Creating image ...')
         dc.create_builder()
@@ -98,15 +98,13 @@ else:
     print('     Pull Request: neo {}, neo-cli {}, neo-vm {}, modules {}'.format(args.pr_neo, args.pr_cli, args.pr_vm, args.pr_mods))
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
     
-    if not args.skip_build:
-        buildlog = dc.run_builder(args)
-        batch.savelog(buildlog)
-
-    if not path.exists('nodes/neo-cli/neo-cli.dll'):
-        print('[!] Build failed. check {}'.format(batch.buildlog))
-        exit(1)
-
+    buildlog = dc.run_builder(args)
+    batch.savelog(buildlog)
     print('[+] Build done {}'.format(batch.buildlog))
+
+if not path.exists('nodes/neo-cli/neo-cli.dll'):
+    print('[!] Binaries missing. check logs')
+    exit(1)
 
 
 print('[+] Creating Node image ...')
