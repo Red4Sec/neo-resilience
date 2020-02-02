@@ -69,6 +69,7 @@ parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 
 parser.add_argument('--show-output', action='store_true', help='Show output from nodes')
 parser.add_argument('--skip-build', action='store_true', help='Skip neo-cli compilation')
+parser.add_argument('--interactive-node', action='store_true', help='Run an interactive node')
 
 args = parser.parse_args()
 
@@ -98,8 +99,8 @@ else:
     print('     Code Reference: neo {}, neo-vm {}'.format(args.code_neo, args.code_vm))
     
     if not args.skip_build:
-    buildlog = dc.run_builder(args)
-    batch.savelog(buildlog)
+        buildlog = dc.run_builder(args)
+        batch.savelog(buildlog)
 
     if not path.exists('nodes/neo-cli/neo-cli.dll'):
         print('[!] Build failed. check {}'.format(batch.buildlog))
@@ -125,16 +126,17 @@ for test in test_batch:
     print('     Phases: {}'.format(len(test['phases'])))
     print('     Duration: {}s'.format(sum(p['duration'] for p in test['phases']) + test['start-delay']))
     print('     Transactions: {}'.format(test['tx']))
-    print('     Phases:')
 
     nodehelper.config_txgen(test['tx'], test['start-delay'], test['tx_round'], test['tx_sleep'])
     dc.neo_net_up(args.show_output)
+    if(args.interactive_node):
+        sleep(5)
+        print('     Interactive node -> docker exec -it node-interactive bash')
+        dc.start_interactive()
 
+    print('     Phases')
     print('        Network warm up - {}s'.format(test['start-delay']))
     sleep(test['start-delay'])
-
-    print('[i] Launching interactive...\n')
-    dc.start_interactive()
 
     first = True
     for phase in test['phases']:
@@ -146,8 +148,9 @@ for test in test_batch:
         first = False
 
     batch.save_test_result(test)
-    dc.stop_interactive()
     dc.neo_net_down()
+    if(args.interactive_node):
+        dc.stop_interactive()
     print('     Generated blocks:\n        {}'.format(batch.report.tests[test['name']]['blocks']))
     print('     Pass: {}'.format(batch.report.tests[test['name']]['result']))
 
