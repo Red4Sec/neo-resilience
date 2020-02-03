@@ -61,7 +61,7 @@ class DockerControl(object):
     def start_interactive(self):
         path = os.getcwd()
         volumes = {
-            os.path.join(path,'nodes/tmp'): {'bind': '/node-tmp', 'mode': 'rw'},
+            os.path.join(path,'nodes/shared-dir'): {'bind': '/shared-dir', 'mode': 'rw'},
             os.path.join(path,'nodes/configs/protocol.json'): {'bind': '/opt/neo-cli/protocol.json', 'mode': 'ro'},
             os.path.join(path,'nodes/configs/config.txgen.json'): {'bind': '/opt/neo-cli/config.json', 'mode': 'ro'},
             os.path.join(path,'nodes/wallets/wallet0.json'): {'bind': '/opt/neo-cli/wallet.json', 'mode': 'ro'}
