@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Neo Resilience
-# Version: 0.4.3
+# Version: 0.4.4
 # https://github.com/red4sec/neo-resilience
 
 

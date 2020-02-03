@@ -89,7 +89,7 @@ if [[ $PR_NEO -ne 0 || $CODE_NEO -eq 1  || $CODE_VM -eq 1 || $BRANCH_NEO != "mas
         git checkout pr_$PR_NEO
     fi
     dotnet remove /src/neo-node/neo-cli/neo-cli.csproj package neo
-    dotnet sln /src/neo-node/neo-cli.sln add /src/neo/src/neo/neo.csproj
+    dotnet sln /src/neo-node/neo-node.sln add /src/neo/src/neo/neo.csproj
     dotnet add /src/neo-node/neo-cli/neo-cli.csproj reference /src/neo/src/neo/neo.csproj
 fi
 
@@ -102,7 +102,7 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
         git checkout pr_$PR_VM
     fi
     dotnet remove /src/neo/src/neo/neo.csproj package neo.vm
-    dotnet sln /src/neo-node/neo-cli.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
+    dotnet sln /src/neo-node/neo-node.sln add /src/neo-vm/src/neo-vm/neo-vm.csproj
     dotnet add /src/neo/src/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
@@ -114,9 +114,10 @@ fi
 # Analysis
 if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
     cd /
+    dotnet sln /src/neo-node/neo-node.sln remove /src/neo-node/neo-gui/neo-gui.csproj
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
-    dotnet build /src/neo-node/neo-cli.sln -r ubuntu.16.04-x64
+    dotnet build /src/neo-node/neo-node.sln -r ubuntu.16.04-x64
     dotnet-sonarscanner end
 fi
 
