@@ -34,6 +34,8 @@ class DockerControl(object):
         if (args.pr_mods): build_arguments += ' -g {}'.format(args.pr_mods)
         if (args.code_neo): build_arguments += ' -a'
         if (args.code_vm): build_arguments += ' -b'
+        if (args.debug): build_arguments += ' -e'
+        if (args.target): build_arguments += ' -t {}'.format(args.target)
         if (args.analysis): build_arguments += ' -q'
         if (args.doc):
             build_arguments += ' -d'

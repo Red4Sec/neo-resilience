@@ -64,6 +64,9 @@ parser.add_argument('--pr-mods', type=int, default=0, help='Use a specific neo m
 parser.add_argument('--code-neo', action='store_true', help='Build using github neo code as reference')
 parser.add_argument('--code-vm', action='store_true', help='Build using github neo-vm code as reference')
 
+parser.add_argument('--debug', action='store_true', help='Debug binaries compilation')
+parser.add_argument('--target', type=str, default='ubuntu.16.04-x64', help='Target binaries compilation')
+
 parser.add_argument('--doc', action='store_true', help='Generate code documentation')
 parser.add_argument('--analysis', action='store_true', help='Run code analysis')
 

@@ -13,6 +13,8 @@ PR_NEO=0
 PR_CLI=0
 PR_VM=0
 PR_MODS=0
+BUILD=Release
+TARGET=ubuntu.16.04-x64
 
 # TODO: getopt long arguments
 while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d,q option; do
@@ -31,6 +33,8 @@ while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d,q option; do
         g) PR_MODS=${OPTARG};;
         a) CODE_NEO=1;;
         b) CODE_VM=1;;
+        e) BUILD=Debug;;
+        t) TARGET=${OPTARG};;
         d) DOC_GEN=1;;
         q) SC_ANA=1;;
     esac
@@ -58,10 +62,12 @@ echo "PR_VM=$PR_VM"
 echo "PR_MODS=$PR_MODS"
 echo "CODE_NEO=$CODE_NEO"
 echo "CODE_VM=$CODE_VM"
+echo "BUILD=$BUILD"
+echo "TARGET=$TARGET"
 echo "DOC_GEN=$DOC_GEN"
 echo "SC_ANA=$SC_ANA"
 echo "--------------------------------------------------------"
-echo "   BUILD LOG "
+echo "   CODE CLONE "
 echo "--------------------------------------------------------"
 
 # neo-cli
@@ -108,38 +114,47 @@ fi
 
 # Documentation
 if [[ $DOC_GEN -eq 1 ]]; then
+    echo "--------------------------------------------------------"
+    echo "   DOCUMENTATION "
+    echo "--------------------------------------------------------"
     doxygen /doc.config
 fi
 
 # Analysis
 if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
+    echo "--------------------------------------------------------"
+    echo "   ANALYSIS "
+    echo "--------------------------------------------------------"
     cd /
     dotnet sln /src/neo-node/neo-node.sln remove /src/neo-node/neo-gui/neo-gui.csproj
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
-    dotnet build /src/neo-node/neo-node.sln -r ubuntu.16.04-x64
+    dotnet build /src/neo-node/neo-node.sln -r $TARGET
     dotnet-sonarscanner end
 fi
 
 # Build
-dotnet publish /src/neo-node/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli -c Release -r ubuntu.16.04-x64
-dotnet publish /src/neo-modules/src/LevelDBStore/LevelDBStore.csproj -o LevelDBStore -c Release -r ubuntu.16.04-x64 -f netstandard2.1
-#dotnet publish /src/neo-modules/src/RpcServer/RpcServer.csproj -o RpcServer -c Release -r ubuntu.16.04-x64 -f netstandard2.1
-dotnet publish /src/neo-modules/src/SystemLog/SystemLog.csproj -o SystemLog -c Release -r ubuntu.16.04-x64 -f netstandard2.1
+echo "--------------------------------------------------------"
+echo "   BUILD "
+echo "--------------------------------------------------------"
+dotnet publish /src/neo-node/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli -c $BUILD -r $TARGET
+dotnet publish /src/neo-modules/src/LevelDBStore/LevelDBStore.csproj -o LevelDBStore -c $BUILD -r $TARGET -f netstandard2.1
+#dotnet publish /src/neo-modules/src/RpcServer/RpcServer.csproj -o RpcServer -c $BUILD -r $TARGET -f netstandard2.1
+dotnet publish /src/neo-modules/src/SystemLog/SystemLog.csproj -o SystemLog -c $BUILD -r $TARGET -f netstandard2.1
 
 # Output binaries
-if [[ -d "/src/neo-node/neo-cli/bin/Release/netcoreapp3.0/ubuntu.16.04-x64/" ]]; then
-    mv /src/neo-node/neo-cli/bin/Release/netcoreapp3.0/ubuntu.16.04-x64/* /build/neo-cli
+if [[ -d "/src/neo-node/neo-cli/bin/$BUILD/netcoreapp3.0/$TARGET/" ]]; then
+    mv /src/neo-node/neo-cli/bin/$BUILD/netcoreapp3.0/$TARGET/* /build/neo-cli
 fi
-if [[ -d "/src/neo-modules/src/LevelDBStore/bin/Release/netstandard2.1/ubuntu.16.04-x64/" ]]; then
+if [[ -d "/src/neo-modules/src/LevelDBStore/bin/$BUILD/netstandard2.1/$TARGET/" ]]; then
     mkdir -p /build/neo-cli/Plugins
-    mv /src/neo-modules/src/LevelDBStore/bin/Release/netstandard2.1/ubuntu.16.04-x64/* /build/neo-cli/Plugins
+    mv /src/neo-modules/src/LevelDBStore/bin/$BUILD/netstandard2.1/$TARGET/* /build/neo-cli/Plugins
 fi
-if [[ -d "/src/neo-modules/src/RpcServer/bin/Release/netstandard2.1/ubuntu.16.04-x64/" ]]; then
+if [[ -d "/src/neo-modules/src/RpcServer/bin/$BUILD/netstandard2.1/$TARGET/" ]]; then
     mkdir -p /build/neo-cli/Plugins
-    mv /src/neo-modules/src/RpcServer/bin/Release/netstandard2.1/ubuntu.16.04-x64/* /build/neo-cli/Plugins
+    mv /src/neo-modules/src/RpcServer/bin/$BUILD/netstandard2.1/$TARGET/* /build/neo-cli/Plugins
 fi
-if [[ -d "/src/neo-modules/src/SystemLog/bin/Release/netstandard2.1/ubuntu.16.04-x64/" ]]; then
+if [[ -d "/src/neo-modules/src/SystemLog/bin/$BUILD/netstandard2.1/$TARGET/" ]]; then
     mkdir -p /build/neo-cli/Plugins
-    mv /src/neo-modules/src/SystemLog/bin/Release/netstandard2.1/ubuntu.16.04-x64/* /build/neo-cli/Plugins
+    mv /src/neo-modules/src/SystemLog/bin/$BUILD/netstandard2.1/$TARGET/* /build/neo-cli/Plugins
 fi
