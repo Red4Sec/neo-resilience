@@ -13,7 +13,7 @@ import signal
 import sys
 from time import time, sleep
 from os import path
-from shutil import copyfile
+from shutil import copyfile, make_archive
 from lib import dockercontrol
 from lib import nodehelper
 from lib import batch
@@ -106,6 +106,7 @@ if not path.exists('nodes/neo-cli/neo-cli.dll'):
     print('[!] Binaries missing. check logs')
     exit(1)
 
+make_archive(path.join(batch.reportdir, 'build'), 'zip', 'nodes/neo-cli')
 
 print('[+] Creating Node image ...')
 dc.create_node_image()
