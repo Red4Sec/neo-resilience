@@ -68,7 +68,21 @@ class DockerControl(object):
             os.path.join(path,'nodes/configs/config.txgen.json'): {'bind': '/opt/neo-cli/config.json', 'mode': 'ro'},
             os.path.join(path,'nodes/wallets/wallet0.json'): {'bind': '/opt/neo-cli/wallet.json', 'mode': 'ro'}
             }
-        node = self.client.containers.run('neo-node',['sleep 10d'], entrypoint=['/bin/sh','-c'], remove=True, detach=True, name='node-interactive', auto_remove=True, network='neo-resilience_neo-net', privileged=True, volumes=volumes)
+        ports = {
+            '10332/tcp': 10332,
+            '10333/tcp': 10333
+            }
+        node = self.client.containers.run(
+            'neo-node', ['sleep 10d'],
+            entrypoint=['/bin/sh','-c'],
+            name='node-interactive',
+            detach=True,
+            remove=True,
+            auto_remove=True,
+            network='neo-resilience_neo-net',
+            ports=ports,
+            privileged=True,
+            volumes=volumes)
         bridge = [net for net in self.client.networks.list() if net.name == 'bridge'][0]
         bridge.connect(node)
         return True
