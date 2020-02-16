@@ -71,27 +71,27 @@ echo "   CODE CLONE "
 echo "--------------------------------------------------------"
 
 # neo-cli
-git clone --single-branch --branch $BRANCH_CLI $SOURCE_CLI /src/neo-node
+git clone --verbose --single-branch --branch $BRANCH_CLI $SOURCE_CLI /src/neo-node
 if [[ $PR_CLI -ne 0 ]]; then
     cd /src/neo-node
-    git fetch origin refs/pull/$PR_CLI/head:pr_$PR_CLI
+    git fetch origin --verbose refs/pull/$PR_CLI/head:pr_$PR_CLI
     git checkout pr_$PR_CLI
 fi
 
 # neo-modules
-git clone --single-branch --branch $BRANCH_PLG $SOURCE_MODS /src/neo-modules
+git clone --verbose --single-branch --branch $BRANCH_PLG $SOURCE_MODS /src/neo-modules
 if [[ $PR_MODS -ne 0 ]]; then
     cd /src/neo-modules
-    git fetch origin refs/pull/$PR_MODS/head:pr_$PR_MODS
+    git fetch origin --verbose refs/pull/$PR_MODS/head:pr_$PR_MODS
     git checkout pr_$PR_MODS
 fi
 
 # neo-core
 if [[ $PR_NEO -ne 0 || $CODE_NEO -eq 1  || $CODE_VM -eq 1 || $BRANCH_NEO != "master" || $PR_VM -ne 0 ]]; then
-    git clone --single-branch --branch $BRANCH_NEO $SOURCE_NEO /src/neo
+    git clone --verbose --single-branch --branch $BRANCH_NEO $SOURCE_NEO /src/neo
     if [[ $PR_NEO -ne 0 ]]; then
         cd /src/neo
-        git fetch origin refs/pull/$PR_NEO/head:pr_$PR_NEO
+        git fetch origin --verbose refs/pull/$PR_NEO/head:pr_$PR_NEO
         git checkout pr_$PR_NEO
     fi
     dotnet remove /src/neo-node/neo-cli/neo-cli.csproj package neo
@@ -101,10 +101,10 @@ fi
 
 # neo-vm
 if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
-    git clone --single-branch --branch $BRANCH_VM $SOURCE_VM /src/neo-vm
+    git clone --verbose --single-branch --branch $BRANCH_VM $SOURCE_VM /src/neo-vm
     if [[ $PR_VM -ne 0 ]]; then
         cd /src/neo-vm
-        git fetch origin refs/pull/$PR_VM/head:pr_$PR_VM
+        git fetch origin --verbose refs/pull/$PR_VM/head:pr_$PR_VM
         git checkout pr_$PR_VM
     fi
     dotnet remove /src/neo/src/neo/neo.csproj package neo.vm
