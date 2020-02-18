@@ -11,6 +11,13 @@
     <PackageReference Include="Neo" Version="3.0.0-CI00847" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TxFlood\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;  echo  ###  UPDATING &quot;$(TargetFileName)&quot; IN TXGEN PLUGINS  ###&#xD;&#xA;  copy /B /Y $(TargetDir)$(TargetFileName) ..\..\nodes\plugins\txgen\$(TargetFileName)&#xD;&#xA;)" />
   </Target>

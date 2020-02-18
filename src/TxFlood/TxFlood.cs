@@ -1,12 +1,17 @@
 using Akka.Actor;
 using Neo.IO;
+using Neo.Ledger;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
+using Neo.Persistence;
 using Neo.Plugins.Helpers;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
+using Neo.Wallets.NEP6;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -15,12 +20,11 @@ using System.Threading.Tasks;
 
 namespace Neo.Plugins
 {
-    public class TxFlood : Plugin
+    public class TxFlood : Plugin, IPersistencePlugin
     {
         private readonly Random _rand;
         private readonly Wallet Wallet;
         private readonly Type _sendDirectlyType;
-        private readonly AssetDescriptor NEO, GAS;
         private readonly FieldInfo _sendDirectlyField;
         private readonly WalletAccount[] _sources, _destinations;
 
@@ -28,8 +32,11 @@ namespace Neo.Plugins
         private const string WALLET_FILE = "wallet.json";
         private const string WALLET_PASS = "pass";
 
+        private AssetDescriptor NEO, GAS;
+
         private Task _task;
         private long _taskRun = 0;
+        private Transaction _mintTransaction = null;
         private int SLEEP_START = 51_000;
         private int SLEEP_ROUND = 5_000;
         private int SLEEP_TX = 500;
@@ -57,15 +64,134 @@ namespace Neo.Plugins
 
             Wallet = WalletHelper.OpenWallet(WALLET_FILE, WALLET_PASS);
 
-            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
-            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
-
             _sources = Wallet.GetAccounts().Skip(1).ToArray();
             _destinations = _sources.Skip(1).Concat(_sources.Take(1)).ToArray();
 
             // Warm up
 
             Parallel.ForEach(_sources, (a) => a.GetKey());
+        }
+
+        protected override void Configure()
+        {
+            Settings.Load(GetConfiguration());
+        }
+
+        private bool InitWallet()
+        {
+            if (Wallet == null)
+            {
+                Console.WriteLine("no wallet found");
+                return false;
+            }
+
+            if (NEO != null)
+            {
+                return true;
+            }
+
+            // Open wallet
+
+            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
+            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
+
+            CreateMintTx(Wallet.GetAccounts().First().ScriptHash);
+            return true;
+        }
+
+        void CreateMintTx(UInt160 to)
+        {
+            // Import all CN keys
+
+            if (File.Exists("cnWallets.json"))
+            {
+                File.Delete("cnWallets.json");
+            }
+
+            var wallet = new NEP6Wallet("cnWallets.json");
+            using var unlock = wallet.Unlock("123");
+
+            var cnWallets = Settings.Default.Wifs.Select(wif => wallet.Import(wif)).ToArray();
+
+            // Get CN contract
+
+            var F = (cnWallets.Length - 1) / 3;
+            var M = cnWallets.Length - F;
+            var CNContract = Contract.CreateMultiSigContract(M, Blockchain.StandbyValidators);
+
+            // Create TX
+
+            var mintTx = Wallet.MakeTransaction
+                (
+                new TransferOutput[]
+                {
+                    new TransferOutput()
+                    {
+                         AssetId = NEO.AssetId,
+                         ScriptHash = to,
+                         Value = new BigDecimal(1_000_000,0),
+                    },
+                    new TransferOutput()
+                    {
+                         AssetId = GAS.AssetId,
+                         ScriptHash = to,
+                         Value = new BigDecimal(30_000_000,8),
+                    },
+                },
+                CNContract.ScriptHash
+                );
+
+            // Create context
+
+            var context = new ContractParametersContext(mintTx);
+
+            // Sign with all required CN
+
+            foreach (var cnWallet in cnWallets)
+            {
+                var key = cnWallet.GetKey();
+                var signature = context.Verifiable.Sign(key);
+
+                context.AddSignature(CNContract, key.PublicKey, signature);
+                if (context.Completed) break;
+            }
+
+            mintTx.Witnesses = context.GetWitnesses();
+
+            // Relay
+
+            _mintTransaction = mintTx;
+            //var send = new LocalNode.Relay { Inventory = _mintTransaction };
+            var send = Activator.CreateInstance(_sendDirectlyType);
+            _sendDirectlyField.SetValue(send, _mintTransaction);
+            System.LocalNode.Tell(send);
+        }
+
+        public void OnPersist(StoreView snapshot, IReadOnlyList<Blockchain.ApplicationExecuted> applicationExecutedList)
+        {
+            // Check if we need to watch the blocks
+
+            if (_mintTransaction == null)
+            {
+                return;
+            }
+
+            foreach (var app in applicationExecutedList)
+            {
+                // Check if the Mint transaction arrived
+
+                if (app.Transaction.Hash == _mintTransaction.Hash)
+                {
+                    // Remove the watcher
+
+                    _mintTransaction = null;
+
+                    // Send distribute
+
+                    Distribute("gas", new BigDecimal(1_000_000, 8));
+                    Distribute("neo", new BigDecimal(1_000_000, 8));
+                }
+            }
         }
 
         protected override void OnPluginsLoaded()
@@ -110,10 +236,24 @@ namespace Neo.Plugins
             {
                 case "stop": Stop(); return true;
                 case "launch": Launch(); return true;
-                case "balances": Balances(args); return true;
-                case "distribute": Distribute(args); return true;
-                case "collect": Collect(args); return true;
-                case "flood": Flood(); return true;
+                case "balances": return Balances(args);
+                case "distribute":
+                    {
+                        if (args.Length != 3) return false;
+                        Distribute(args[2], BigDecimal.Parse(args[1], 0));
+                        return true;
+                    }
+                case "collect":
+                    {
+                        if (args.Length != 2) return false;
+                        Collect(args[1]);
+                        return true;
+                    }
+                case "flood":
+                    {
+                        Flood();
+                        return true;
+                    }
             }
 
             return false;
@@ -158,6 +298,8 @@ namespace Neo.Plugins
 
         private bool Balances(string[] args)
         {
+            if (!InitWallet()) return false;
+
             if (args.Length > 1 && args[1].ToLower() == "all")
             {
                 foreach (UInt160 account in Wallet.GetAccounts().Select(p => p.ScriptHash))
@@ -178,27 +320,25 @@ namespace Neo.Plugins
             return true;
         }
 
-        private bool Distribute(string[] args)
+        private bool Distribute(string asset, BigDecimal value)
         {
-            if (args.Length != 3) return false;
+            if (!InitWallet()) return false;
 
-            var value = BigDecimal.Parse(args[1], 0);
             var org = Wallet.GetAccounts().First().Address.ToScriptHash();
             var dest = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
             long fee = 0; // 300_000_000;
 
-            return SendMany(args[2].ToLower() == "gas" ? GAS : NEO, org, dest, value, fee);
+            return SendMany(asset.ToLowerInvariant() == "gas" ? GAS : NEO, org, dest, value, fee);
         }
 
-        private bool Collect(string[] args)
+        private bool Collect(string asset)
         {
-            if (args.Length != 2) return false;
+            if (!InitWallet()) return false;
 
+            var assetId = asset.ToLowerInvariant() == "gas" ? GAS : NEO;
             var dest = Wallet.GetAccounts().First().Address.ToScriptHash();
             var sources = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
             long fee = 250_000_000;
-
-            var assetId = args[1].ToLower() == "gas" ? GAS : NEO;
 
             foreach (var dir in sources)
             {
@@ -220,6 +360,8 @@ namespace Neo.Plugins
 
         private bool Flood()
         {
+            if (!InitWallet()) return false;
+
             //var contract = UInt160.Parse(CONTRACT);
             Console.WriteLine();
 
@@ -380,10 +522,9 @@ namespace Neo.Plugins
             return SignAndRelay(tx);
         }
 
+        /*
         private bool Invoke(UInt160 hash, string method, ContractParameter[] args, UInt160 from)
         {
-            return true;
-            /*
             byte[] script;
             using (var sb = new ScriptBuilder())
             {
@@ -428,7 +569,7 @@ namespace Neo.Plugins
             Wallet.Sign(context);
             tx.Witnesses = context.GetWitnesses();
             return SignAndRelay(tx);
-            */
         }
+        */
     }
 }
