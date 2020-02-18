@@ -2,39 +2,36 @@ using Akka.Actor;
 using Neo.IO;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
+using Neo.Plugins.Helpers;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
-using Neo.Wallets.NEP6;
-using Neo.Wallets.SQLite;
 using System;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SIO = System.IO;
 
 namespace Neo.Plugins
 {
     public class TxFlood : Plugin
     {
         private readonly Random _rand;
-        private readonly Type _sendDirectlyType;
-        private readonly FieldInfo _sendDirectlyField;
-
         private readonly Wallet Wallet;
-        private Task _task;
-        private long _taskRun = 0;
-        private WalletAccount[] _sources, _destinations;
-        private AssetDescriptor NEO, GAS;
+        private readonly Type _sendDirectlyType;
+        private readonly AssetDescriptor NEO, GAS;
+        private readonly FieldInfo _sendDirectlyField;
+        private readonly WalletAccount[] _sources, _destinations;
 
         private const string ENV_TASK_CONTROLLER = "NEO_TX_RUN";
         private const string WALLET_FILE = "wallet.json";
         private const string WALLET_PASS = "pass";
 
-        private int SLEEP_START = 51000;
-        private int SLEEP_ROUND = 5000;
+        private Task _task;
+        private long _taskRun = 0;
+        private int SLEEP_START = 51_000;
+        private int SLEEP_ROUND = 5_000;
         private int SLEEP_TX = 500;
         private string CONTRACT = "0x185072a45df4d002545db31157a8955baa39e11a";
 
@@ -58,47 +55,17 @@ namespace Neo.Plugins
 
             // Open wallet
 
-            Wallet = OpenWallet(WALLET_FILE, WALLET_PASS);
-        }
+            Wallet = WalletHelper.OpenWallet(WALLET_FILE, WALLET_PASS);
 
-        private static Wallet OpenWallet(string path, string password)
-        {
-            if (!SIO.File.Exists(path)) throw new SIO.FileNotFoundException();
-            switch (SIO.Path.GetExtension(path))
-            {
-                case ".db3":
-                    {
-                        return UserWallet.Open(path, password);
-                    }
-                case ".json":
-                    {
-                        var nep6wallet = new NEP6Wallet(path);
-                        nep6wallet.Unlock(password);
-                        return nep6wallet;
-                    }
-                default: throw new NotSupportedException();
-            }
-        }
+            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
+            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
-        private bool UpdateEnvVar(ref int val, string varName)
-        {
-            var value = Environment.GetEnvironmentVariable(varName);
-            if (string.IsNullOrEmpty(value)) return false;
-            if (!int.TryParse(value, out var intValue)) return false;
-            if (intValue == val) return false;
+            _sources = Wallet.GetAccounts().Skip(1).ToArray();
+            _destinations = _sources.Skip(1).Concat(_sources.Take(1)).ToArray();
 
-            val = intValue;
-            return true;
-        }
+            // Warm up
 
-        private bool UpdateEnvVar(ref string val, string varName)
-        {
-            var value = Environment.GetEnvironmentVariable(varName);
-            if (string.IsNullOrEmpty(value)) return false;
-            if (value == val) return false;
-
-            val = value;
-            return true;
+            Parallel.ForEach(_sources, (a) => a.GetKey());
         }
 
         protected override void OnPluginsLoaded()
@@ -107,10 +74,10 @@ namespace Neo.Plugins
             {
                 while (true)
                 {
-                    UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
-                    UpdateEnvVar(ref SLEEP_ROUND, ENV_TASK_CONTROLLER + "_SLEEP_ROUND");
-                    UpdateEnvVar(ref SLEEP_TX, ENV_TASK_CONTROLLER + "_SLEEP_TX");
-                    UpdateEnvVar(ref CONTRACT, ENV_TASK_CONTROLLER + "_CONTRACT");
+                    EnvHelper.UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
+                    EnvHelper.UpdateEnvVar(ref SLEEP_ROUND, ENV_TASK_CONTROLLER + "_SLEEP_ROUND");
+                    EnvHelper.UpdateEnvVar(ref SLEEP_TX, ENV_TASK_CONTROLLER + "_SLEEP_TX");
+                    EnvHelper.UpdateEnvVar(ref CONTRACT, ENV_TASK_CONTROLLER + "_CONTRACT");
 
                     // Start stop
 
@@ -127,7 +94,8 @@ namespace Neo.Plugins
                             Stop();
                         }
                     }
-                    Thread.Sleep(5000);
+
+                    Thread.Sleep(5_000);
                 }
             })
             .Start();
@@ -138,60 +106,32 @@ namespace Neo.Plugins
             if (!(message is string[] args)) return false;
             if (args.Length == 0) return false;
 
-            switch (args[0].ToLower())
+            switch (args[0].ToLowerInvariant())
             {
                 case "stop": Stop(); return true;
                 case "launch": Launch(); return true;
-                case "balances":
-                    {
-                        if (!InitWallet()) return true;
-                        Balances(args);
-                        return true;
-                    }
-                case "distribute":
-                    {
-                        if (!InitWallet()) return true;
-                        Distribute(args);
-                        return true;
-                    }
-                case "collect":
-                    {
-                        if (!InitWallet()) return true;
-                        Collect(args);
-                        return true;
-                    }
-                case "flood":
-                    {
-                        if (!InitWallet()) return true;
-                        Flood();
-                        return true;
-                    }
+                case "balances": Balances(args); return true;
+                case "distribute": Distribute(args); return true;
+                case "collect": Collect(args); return true;
+                case "flood": Flood(); return true;
             }
 
             return false;
-        }
-
-        public void Debug(string input)
-        {
-#if DEBUG
-            Console.WriteLine(input);
-#endif
         }
 
         public bool Launch()
         {
             if (_task?.Status == TaskStatus.Running)
             {
-                Debug("Already running");
+                LogHelper.Debug("Already running");
                 return false;
             }
 
             Interlocked.Exchange(ref _taskRun, 1);
             _task = Task.Run(() =>
             {
-                Debug("Start sender");
+                LogHelper.Debug("Start sender");
                 Thread.Sleep(SLEEP_START);
-                if (!InitWallet()) return;
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
@@ -207,12 +147,12 @@ namespace Neo.Plugins
         {
             if (_task == null || _task.Status != TaskStatus.Running)
             {
-                Debug("Already stoped");
+                LogHelper.Debug("Already stoped");
                 return false;
             }
 
             Interlocked.Exchange(ref _taskRun, 0);
-            Debug("Stoping sender...");
+            LogHelper.Debug("Stoping sender...");
             return _task?.Status != TaskStatus.Running;
         }
 
@@ -231,7 +171,10 @@ namespace Neo.Plugins
                 }
             }
 
-            Console.WriteLine("Total    NEO: " + Wallet.GetAvailable(NativeContract.NEO.Hash) + "    GAS: " + Wallet.GetAvailable(NativeContract.GAS.Hash));
+            Console.WriteLine("Total" +
+                "    NEO: " + Wallet.GetAvailable(NativeContract.NEO.Hash) +
+                "    GAS: " + Wallet.GetAvailable(NativeContract.GAS.Hash));
+
             return true;
         }
 
@@ -253,7 +196,7 @@ namespace Neo.Plugins
 
             var dest = Wallet.GetAccounts().First().Address.ToScriptHash();
             var sources = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
-            long fee = 250000000;
+            long fee = 250_000_000;
 
             var assetId = args[1].ToLower() == "gas" ? GAS : NEO;
 
@@ -272,27 +215,6 @@ namespace Neo.Plugins
                     Send(assetId, dir, dest, balance.ToString(), fee);
                 }
             }
-            return true;
-        }
-
-        private bool InitWallet()
-        {
-            if (Wallet == null)
-            {
-                Console.WriteLine("no wallet or rpc disabled");
-                return false;
-            }
-
-            NEO = new AssetDescriptor(NativeContract.NEO.Hash);
-            GAS = new AssetDescriptor(NativeContract.GAS.Hash);
-
-            _sources = Wallet.GetAccounts().Skip(1).ToArray();
-            _destinations = _sources.Skip(1).Concat(_sources.Take(1)).ToArray();
-
-            // Warm up
-
-            Parallel.ForEach(_sources, (a) => a.GetKey());
-
             return true;
         }
 
