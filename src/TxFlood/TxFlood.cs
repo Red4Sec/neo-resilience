@@ -95,12 +95,18 @@ namespace Neo.Plugins
             NEO = new AssetDescriptor(NativeContract.NEO.Hash);
             GAS = new AssetDescriptor(NativeContract.GAS.Hash);
 
-            CreateMintTx(Wallet.GetAccounts().First().ScriptHash);
             return true;
         }
 
-        void CreateMintTx(UInt160 to)
+        void CreateMintTx()
         {
+            if (!InitWallet())
+            {
+                return;
+            }
+
+            UInt160 to = Wallet.GetAccounts().First().ScriptHash;
+
             // Import all CN keys
 
             if (File.Exists("cnWallets.json"))
@@ -196,6 +202,15 @@ namespace Neo.Plugins
 
         protected override void OnPluginsLoaded()
         {
+            if (Blockchain.Singleton.Height < 10)
+            {
+                try
+                {
+                    CreateMintTx();
+                }
+                catch { }
+            }
+
             new Task(() =>
             {
                 while (true)

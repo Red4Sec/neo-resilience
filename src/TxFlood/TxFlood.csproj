@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;  echo  ###  UPDATING &quot;$(TargetFileName)&quot; IN TXGEN PLUGINS  ###&#xD;&#xA;  copy /B /Y $(TargetDir)$(TargetFileName) ..\..\nodes\plugins\txgen\$(TargetFileName)&#xD;&#xA;)" />
+    <Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;  echo  ###  UPDATING &quot;$(TargetFileName)&quot; IN TXGEN PLUGINS  ###&#xD;&#xA;  copy /B /Y $(TargetDir)$(TargetFileName) ..\..\nodes\plugins\txgen\$(TargetFileName)&#xD;&#xA;  copy /B /Y $(TargetDir)TxFlood\config.json ..\..\nodes\plugins\txgen\TxFlood\config.json&#xD;&#xA;)" />
   </Target>
 
 </Project>
