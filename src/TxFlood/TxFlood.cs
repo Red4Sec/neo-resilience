@@ -180,11 +180,11 @@ namespace Neo.Plugins
                 return;
             }
 
-            foreach (var app in applicationExecutedList)
+            foreach (var tx in snapshot.PersistingBlock.Transactions)
             {
                 // Check if the Mint transaction arrived
 
-                if (app.Transaction?.Hash == _mintTransaction.Hash)
+                if (tx.Hash == _mintTransaction.Hash)
                 {
                     // Remove the watcher
 
