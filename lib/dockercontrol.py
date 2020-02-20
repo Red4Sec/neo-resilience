@@ -92,7 +92,7 @@ class DockerControl(object):
         try:
             node = self.client.containers.get('node-interactive')
             return node.kill()
-        except:
+        except docker.errors.APIError:
             return False
 
 

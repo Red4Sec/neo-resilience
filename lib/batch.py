@@ -1,7 +1,5 @@
 import json
-from lib import dockercontrol
 from lib import nodehelper
-from time import time
 from datetime import datetime
 import os
 
@@ -31,14 +29,15 @@ class Batch(object):
 
     def save_test_result(self, test):
         nodes = ['node-1', 'node-2', 'node-3', 'node-4', 'node-5', 'node-6', 'node-7']
-        initial_block_count = 0
-        testdir = os.path.join(self.reportdir, test['name'])
+        initial_block_count = 27
+        test_name = test['name']
+        testdir = os.path.join(self.reportdir, test_name)
 
         if not os.path.isdir(testdir):
             os.mkdir(testdir)
 
-        self.report.tests[test['name']] = {
-            'name': test['name'],
+        self.report.tests[test_name] = {
+            'name': test_name,
             'desc': test['desc'],
             'phases': len(test['phases']),
             'duration': sum(p['duration'] for p in test['phases']),
@@ -49,31 +48,40 @@ class Batch(object):
 
         for node in nodes:
             node_stats = os.path.join(testdir, node + '_stats.json')
+            node_logs = os.path.join(testdir, node + '_logs.tar')
+
             try:
                 self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
                 with open(node_stats) as f:
-                    self.report.tests[test['name']]['stats'][node] = json.load(f)
-            except:
+                    self.report.tests[test_name]['stats'][node] = json.load(f)
+            except FileNotFoundError:
                 print('     Stats not found for {}'.format(node))
+            except BaseException as e:
+                print('     Error: {}'.format(e))
 
-            node_logs = os.path.join(testdir, node + '_logs.tar')
             try:
                 self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs_00AEBED3/ConsensusService', node_logs)
-            except:
+            except FileNotFoundError:
                 print('     Logs not found for {}'.format(node))
+            except BaseException as e:
+                print('     Error: {}'.format(e))
 
-            blocks = nodehelper.get_node_height(self.dc, node) - initial_block_count
-            self.report.tests[test['name']]['blocks'][node] = blocks
+            blocks = 0
+            try:
+                blocks = self.report.tests[test_name]['stats'][node][-1]['Index']
+            except BaseException as e:
+                blocks = nodehelper.get_node_height(self.dc, node) - 1
 
-        if(hasattr(test, 'expected') and test['expected'] > 0):
-            min_block = min(self.report.tests[test['name']]['blocks'].values())
+            self.report.tests[test_name]['blocks'][node] = blocks - initial_block_count
+
+        if('expected' in test and test['expected'] > 0):
+            min_block = min(self.report.tests[test_name]['blocks'].values())
             if(min_block >= test['expected']):
-                self.report.tests[test['name']]['result'] = True
+                self.report.tests[test_name]['result'] = True
             else:
-                self.report.tests[test['name']]['result'] = False
+                self.report.tests[test_name]['result'] = False
         else:
-            self.report.tests[test['name']]['result'] = None
-
+            self.report.tests[test_name]['result'] = None
 
 
     def get_report(self):
