@@ -403,11 +403,11 @@ namespace Neo.Plugins
                             try
                             {
                                 Send(NEO, from.ScriptHash, to.ScriptHash, neo.ToString(), fee);
-                                Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo);
+                                Console.WriteLine($"  NEO - {from.Address} >> {to.Address} --  {neo}");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("  NEO - " + from.Address + " >> " + to.Address + " --  " + neo + $" [ERROR:{ex.ToString()}]");
+                                Console.WriteLine($"  {Blockchain.Singleton.Height}:NEO - {from.Address} >> {to.Address} --  {neo} [ERROR:{ex.ToString()}]");
                             }
                             break;
                         }
@@ -418,11 +418,11 @@ namespace Neo.Plugins
                             try
                             {
                                 Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
-                                Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas);
+                                Console.WriteLine($"  GAS - {from.Address} >> {to.Address} --  {gas}");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("  GAS - " + from.Address + " >> " + to.Address + " --  " + gas + $" [ERROR:{ex.ToString()}]");
+                                Console.WriteLine($"  {Blockchain.Singleton.Height}:GAS - {from.Address} >> {to.Address} --  {gas} [ERROR:{ex.ToString()}]");
                             }
                             break;
                         }
@@ -492,10 +492,10 @@ namespace Neo.Plugins
                     ScriptHash = to
                 }
             }, from);
+
             if (tx == null)
             {
-                Console.WriteLine("Insufficient funds");
-                return false;
+                throw new Exception("Insufficient funds");
             }
 
             if (fee > tx.NetworkFee) tx.NetworkFee = fee;
