@@ -1,6 +1,5 @@
 import json
 from random import randint
-from lib import dockercontrol
 
 
 def config_node(dc, node, values, new=True):

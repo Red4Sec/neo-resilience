@@ -1,7 +1,5 @@
 import json
-from lib import dockercontrol
 from lib import nodehelper
-from time import time
 from datetime import datetime
 import os
 
@@ -69,11 +67,11 @@ class Batch(object):
                 print('     Error: {}'.format(e))
 
             blocks = 0
-            if node in self.report.tests[test_name]['stats']:
-                if 'Index' in self.report.tests[test_name]['stats'][node][-1]:
-                    blocks = self.report.tests[test_name]['stats'][node][-1]['Index']
-            if blocks == 0:
+            try:
+                blocks = self.report.tests[test_name]['stats'][node][-1]['Index']
+            except BaseException as e:
                 blocks = nodehelper.get_node_height(self.dc, node) - 1
+
             self.report.tests[test_name]['blocks'][node] = blocks - initial_block_count
 
         if('expected' in test and test['expected'] > 0):
