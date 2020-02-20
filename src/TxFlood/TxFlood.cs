@@ -1,5 +1,6 @@
 using Akka.Actor;
 using Neo.IO;
+using Neo.IO.Json;
 using Neo.Ledger;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
@@ -109,25 +110,21 @@ namespace Neo.Plugins
 
             // Import all CN keys
 
-            if (File.Exists("cnWallets.json"))
-            {
-                File.Delete("cnWallets.json");
-            }
-
-            var wallet = new NEP6Wallet("cnWallets.json");
+            var wallet = new NEP6Wallet(JObject.Parse("{\"name\":\"name\",\"version\":\"3.0\",\"scrypt\":{\"n\":0,\"r\":0,\"p\":0},\"accounts\":[],\"extra\":{}}"));
             using var unlock = wallet.Unlock(WALLET_PASS);
 
             var cnWallets = Settings.Default.Wifs.Select(wif => wallet.Import(wif)).ToArray();
 
             // Get CN contract
 
-            var F = (cnWallets.Length - 1) / 3;
-            var M = cnWallets.Length - F;
-            var CNContract = Contract.CreateMultiSigContract(M, Blockchain.StandbyValidators);
+            //var m = Blockchain.StandbyValidators.Length / 2 + 1;
+            var m = Blockchain.StandbyValidators.Length - (Blockchain.StandbyValidators.Length - 1) / 3;
+            var CNContract = Contract.CreateMultiSigContract(m, Blockchain.StandbyValidators);
+            wallet.CreateAccount(CNContract);
 
             // Create TX
 
-            var mintTx = Wallet.MakeTransaction
+            var mintTx = wallet.MakeTransaction
                 (
                 new TransferOutput[]
                 {
@@ -135,13 +132,13 @@ namespace Neo.Plugins
                     {
                          AssetId = NEO.AssetId,
                          ScriptHash = to,
-                         Value = new BigDecimal(100_000_000,0),
+                         Value = new BigDecimal(100_000_000, 0),
                     },
                     new TransferOutput()
                     {
                          AssetId = GAS.AssetId,
                          ScriptHash = to,
-                         Value = new BigDecimal(20_000_000_0000_0000,8),
+                         Value = new BigDecimal(20_000_000_0000_0000, 8),
                     },
                 },
                 CNContract.ScriptHash
@@ -186,7 +183,7 @@ namespace Neo.Plugins
             {
                 // Check if the Mint transaction arrived
 
-                if (app.Transaction.Hash == _mintTransaction.Hash)
+                if (app.Transaction?.Hash == _mintTransaction.Hash)
                 {
                     // Remove the watcher
 
