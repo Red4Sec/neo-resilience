@@ -30,7 +30,7 @@ RUN rm -rf /tmp/* &&\
 COPY ./neo-cli/ /opt/neo-cli/
 
 COPY ./plugins/txgen/ /opt/neo-cli/Plugins/
-ADD ./chain /opt/neo-cli/Chain_00AEBED3
+ADD ./chain /opt/neo-cli/Data_LevelDB_00AEBED3
 
 WORKDIR /opt/neo-cli
 CMD ["dotnet", "neo-cli.dll", "--rpc"]
