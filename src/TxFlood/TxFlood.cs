@@ -399,7 +399,7 @@ namespace Neo.Plugins
                     case 2:
                         {
                             // GAS
-                            var gas = new BigDecimal(new BigInteger(_rand.Next(1, 100_000_000)), 8);
+                            var gas = new BigDecimal(new BigInteger(_rand.Next(1, 5_0000_0000)), 8);
                             try
                             {
                                 Send(GAS, from.ScriptHash, to.ScriptHash, gas.ToString(), fee);
