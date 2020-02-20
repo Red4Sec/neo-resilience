@@ -11,8 +11,6 @@ using Neo.SmartContract.Native;
 using Neo.Wallets;
 using Neo.Wallets.NEP6;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -36,7 +34,9 @@ namespace Neo.Plugins
         private AssetDescriptor NEO, GAS;
 
         private Task _task;
+        private Task _warmUpTask;
         private long _taskRun = 0;
+        private bool _distribute = false;
         private Transaction _mintTransaction = null;
         private int SLEEP_START = 51_000;
         private int SLEEP_ROUND = 5_000;
@@ -70,7 +70,8 @@ namespace Neo.Plugins
 
             // Warm up
 
-            Parallel.ForEach(_sources, (a) => a.GetKey());
+            _warmUpTask = new Task(() => Parallel.ForEach(_sources, (a) => a.GetKey()));
+            _warmUpTask.Start();
         }
 
         protected override void Configure()
@@ -171,12 +172,22 @@ namespace Neo.Plugins
             System.LocalNode.Tell(new LocalNode.Relay() { Inventory = _mintTransaction });
         }
 
-        public void OnPersist(StoreView snapshot, IReadOnlyList<Blockchain.ApplicationExecuted> applicationExecutedList)
+        public void OnCommit(StoreView snapshot)
         {
             // Check if we need to watch the blocks
 
             if (_mintTransaction == null)
             {
+                if (_distribute)
+                {
+                    // Send distribute
+
+                    Distribute("gas", new BigDecimal(20_000_0000_0000, 8));
+                    Distribute("neo", new BigDecimal(20_000, 0));
+
+                    _distribute = false;
+                }
+
                 return;
             }
 
@@ -192,8 +203,7 @@ namespace Neo.Plugins
 
                     // Send distribute
 
-                    Distribute("gas", new BigDecimal(20_000_0000_0000, 8));
-                    Distribute("neo", new BigDecimal(20_000, 0));
+                    _distribute = true;
 
                     return;
                 }
@@ -277,7 +287,7 @@ namespace Neo.Plugins
                     }
                 case "mint":
                     {
-                        InitWallet();
+                        CreateMintTx();
                         return true;
                     }
             }
@@ -297,7 +307,15 @@ namespace Neo.Plugins
             _task = Task.Run(() =>
             {
                 LogHelper.Debug("Start sender");
+
                 Thread.Sleep(SLEEP_START);
+
+                if (_warmUpTask?.IsCompleted == false)
+                {
+                    _warmUpTask.Wait();
+                    _warmUpTask.Dispose();
+                    _warmUpTask = null;
+                }
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
