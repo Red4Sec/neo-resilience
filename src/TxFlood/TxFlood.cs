@@ -310,6 +310,20 @@ namespace Neo.Plugins
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
+                    // Ensure funds
+
+                    using var snapshot = Blockchain.Singleton.GetSnapshot();
+
+                    if (NativeContract.NEO.BalanceOf(snapshot, _sources[0].ScriptHash) > 0)
+                    {
+                        break;
+                    }
+
+                    Thread.Sleep(1_000);
+                }
+
+                while (Interlocked.Read(ref _taskRun) == 1)
+                {
                     Flood();
                     Thread.Sleep(SLEEP_ROUND);
                 }
