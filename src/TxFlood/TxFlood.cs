@@ -109,7 +109,7 @@ namespace Neo.Plugins
             }
 
             var wallet = new NEP6Wallet("cnWallets.json");
-            using var unlock = wallet.Unlock("123");
+            using var unlock = wallet.Unlock(WALLET_PASS);
 
             var cnWallets = Settings.Default.Wifs.Select(wif => wallet.Import(wif)).ToArray();
 
@@ -129,13 +129,13 @@ namespace Neo.Plugins
                     {
                          AssetId = NEO.AssetId,
                          ScriptHash = to,
-                         Value = new BigDecimal(1_000_000,0),
+                         Value = new BigDecimal(100_000_000,0),
                     },
                     new TransferOutput()
                     {
                          AssetId = GAS.AssetId,
                          ScriptHash = to,
-                         Value = new BigDecimal(30_000_000,8),
+                         Value = new BigDecimal(20_000_000_0000_0000,8),
                     },
                 },
                 CNContract.ScriptHash
@@ -188,8 +188,8 @@ namespace Neo.Plugins
 
                     // Send distribute
 
-                    Distribute("gas", new BigDecimal(1_000_000, 8));
-                    Distribute("neo", new BigDecimal(1_000_000, 8));
+                    Distribute("gas", new BigDecimal(20_000_0000_0000, 8));
+                    Distribute("neo", new BigDecimal(20_000, 0));
                 }
             }
         }
@@ -252,6 +252,11 @@ namespace Neo.Plugins
                 case "flood":
                     {
                         Flood();
+                        return true;
+                    }
+                case "mint":
+                    {
+                        InitWallet();
                         return true;
                     }
             }
