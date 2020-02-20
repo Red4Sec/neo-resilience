@@ -34,7 +34,6 @@ namespace Neo.Plugins
         private AssetDescriptor NEO, GAS;
 
         private Task _task;
-        private Task _warmUpTask;
         private long _taskRun = 0;
         private bool _distribute = false;
         private Transaction _mintTransaction = null;
@@ -70,8 +69,7 @@ namespace Neo.Plugins
 
             // Warm up
 
-            _warmUpTask = new Task(() => Parallel.ForEach(_sources, (a) => a.GetKey()));
-            _warmUpTask.Start();
+            Parallel.ForEach(_sources, (a) => a.GetKey());
         }
 
         protected override void Configure()
@@ -309,13 +307,6 @@ namespace Neo.Plugins
                 LogHelper.Debug("Start sender");
 
                 Thread.Sleep(SLEEP_START);
-
-                if (_warmUpTask?.IsCompleted == false)
-                {
-                    _warmUpTask.Wait();
-                    _warmUpTask.Dispose();
-                    _warmUpTask = null;
-                }
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
