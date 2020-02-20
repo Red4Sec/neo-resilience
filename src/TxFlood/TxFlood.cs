@@ -168,6 +168,7 @@ namespace Neo.Plugins
             var send = Activator.CreateInstance(_sendDirectlyType);
             _sendDirectlyField.SetValue(send, _mintTransaction);
             System.LocalNode.Tell(send);
+            System.LocalNode.Tell(new LocalNode.Relay() { Inventory = _mintTransaction });
         }
 
         public void OnPersist(StoreView snapshot, IReadOnlyList<Blockchain.ApplicationExecuted> applicationExecutedList)
@@ -193,8 +194,16 @@ namespace Neo.Plugins
 
                     Distribute("gas", new BigDecimal(20_000_0000_0000, 8));
                     Distribute("neo", new BigDecimal(20_000, 0));
+
+                    return;
                 }
             }
+
+            // Send again in order to prevent a mempool bug
+
+            var send = Activator.CreateInstance(_sendDirectlyType);
+            _sendDirectlyField.SetValue(send, _mintTransaction);
+            System.LocalNode.Tell(send);
         }
 
         protected override void OnPluginsLoaded()
