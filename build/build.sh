@@ -17,7 +17,7 @@ BUILD=Release
 TARGET=ubuntu.16.04-x64
 
 # TODO: getopt long arguments
-while getopts w:x:y:z:n:c:p:v:o:i:g:m:a,b,d,q option; do
+while getopts w:x:y:z:n:c:p:v:o:i:g:m:t:a,b,e,d,q option; do
     case "${option}" in
         w) SOURCE_NEO=${OPTARG};;
         x) SOURCE_CLI=${OPTARG};;
