@@ -74,7 +74,7 @@
         "tx": true,
         "tx_round": 2000,
         "tx_sleep": 200,
-        "expected": 30,
+        "expected": 29,
         "phases":
         [
             {
