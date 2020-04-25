@@ -1,4 +1,5 @@
 using Akka.Actor;
+using Neo.ConsoleService;
 using Neo.IO;
 using Neo.IO.Json;
 using Neo.Ledger;
@@ -98,7 +99,8 @@ namespace Neo.Plugins
             return true;
         }
 
-        void CreateMintTx()
+        [ConsoleCommand("mint", Category = "Flood Commands")]
+        public void CreateMintTx()
         {
             if (!InitWallet())
             {
@@ -180,8 +182,8 @@ namespace Neo.Plugins
                 {
                     // Send distribute
 
-                    Distribute("gas", new BigDecimal(20_000_0000_0000, 8));
-                    Distribute("neo", new BigDecimal(20_000, 0));
+                    Distribute("gas", new BigDecimal(20_000_0000_0000, 8).ToString());
+                    Distribute("neo", new BigDecimal(20_000, 0).ToString());
 
                     _distribute = false;
                 }
@@ -256,43 +258,7 @@ namespace Neo.Plugins
             .Start();
         }
 
-        protected override bool OnMessage(object message)
-        {
-            if (!(message is string[] args)) return false;
-            if (args.Length == 0) return false;
-
-            switch (args[0].ToLowerInvariant())
-            {
-                case "stop": Stop(); return true;
-                case "launch": Launch(); return true;
-                case "balances": return Balances(args);
-                case "distribute":
-                    {
-                        if (args.Length != 3) return false;
-                        Distribute(args[2], BigDecimal.Parse(args[1], 0));
-                        return true;
-                    }
-                case "collect":
-                    {
-                        if (args.Length != 2) return false;
-                        Collect(args[1]);
-                        return true;
-                    }
-                case "flood":
-                    {
-                        Flood();
-                        return true;
-                    }
-                case "mint":
-                    {
-                        CreateMintTx();
-                        return true;
-                    }
-            }
-
-            return false;
-        }
-
+        [ConsoleCommand("launch", Category = "Flood Commands")]
         public bool Launch()
         {
             if (_task?.Status == TaskStatus.Running)
@@ -332,6 +298,7 @@ namespace Neo.Plugins
             return _task.Status == TaskStatus.Running;
         }
 
+        [ConsoleCommand("stop", Category = "Flood Commands")]
         public bool Stop()
         {
             if (_task == null || _task.Status != TaskStatus.Running)
@@ -345,11 +312,12 @@ namespace Neo.Plugins
             return _task?.Status != TaskStatus.Running;
         }
 
-        private bool Balances(string[] args)
+        [ConsoleCommand("balances", Category = "Flood Commands")]
+        private bool Balances(bool all)
         {
             if (!InitWallet()) return false;
 
-            if (args.Length > 1 && args[1].ToLower() == "all")
+            if (all)
             {
                 foreach (UInt160 account in Wallet.GetAccounts().Select(p => p.ScriptHash))
                 {
@@ -369,7 +337,8 @@ namespace Neo.Plugins
             return true;
         }
 
-        private bool Distribute(string asset, BigDecimal value)
+        [ConsoleCommand("distribute", Category = "Flood Commands")]
+        public bool Distribute(string asset, string value)
         {
             if (!InitWallet()) return false;
 
@@ -377,10 +346,11 @@ namespace Neo.Plugins
             var dest = Wallet.GetAccounts().Skip(1).Select(d => d.Address.ToScriptHash()).ToArray();
             long fee = 0; // 300_000_000;
 
-            return SendMany(asset.ToLowerInvariant() == "gas" ? GAS : NEO, org, dest, value, fee);
+            return SendMany(asset.ToLowerInvariant() == "gas" ? GAS : NEO, org, dest, BigDecimal.Parse(value, 0), fee);
         }
 
-        private bool Collect(string asset)
+        [ConsoleCommand("collect", Category = "Flood Commands")]
+        public bool Collect(string asset)
         {
             if (!InitWallet()) return false;
 
@@ -407,7 +377,8 @@ namespace Neo.Plugins
             return true;
         }
 
-        private bool Flood()
+        [ConsoleCommand("flood", Category = "Flood Commands")]
+        public bool Flood()
         {
             if (!InitWallet()) return false;
 
