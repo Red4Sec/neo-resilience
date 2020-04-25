@@ -154,8 +154,9 @@ namespace Neo.Plugins
             foreach (var cnWallet in cnWallets)
             {
                 var key = cnWallet.GetKey();
-                var signature = context.Verifiable.Sign(key);
+                if (key == null) continue;
 
+                var signature = context.Verifiable.Sign(key);
                 context.AddSignature(CNContract, key.PublicKey, signature);
                 if (context.Completed) break;
             }
@@ -224,7 +225,10 @@ namespace Neo.Plugins
                 {
                     CreateMintTx();
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Console.WriteLine("ERROR: " + e.ToString());
+                }
             }
 
             new Task(() =>
