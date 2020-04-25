@@ -13,7 +13,8 @@ RUN apt-get update &&\
 RUN rm -rf /tmp/* &&\
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-COPY build.sh doc.config analysis?xml /
+COPY build.sh analysis?xml /
+COPY doc-gen /doc-gen
 RUN chmod +x /build.sh
 
 ENTRYPOINT ["/build.sh"]
