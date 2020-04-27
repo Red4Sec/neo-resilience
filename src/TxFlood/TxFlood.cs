@@ -118,9 +118,9 @@ namespace Neo.Plugins
 
             // Get CN contract
 
-            var m = Blockchain.StandbyValidators.Length / 2 + 1;
-            // var m = Blockchain.StandbyValidators.Length - (Blockchain.StandbyValidators.Length - 1) / 3;
-            var CNContract = Contract.CreateMultiSigContract(m, Blockchain.StandbyValidators);
+            using var snapshot = Blockchain.Singleton.GetSnapshot();
+            var validators = NativeContract.NEO.GetValidators(snapshot);
+            var CNContract = Contract.CreateMultiSigContract(validators.Length - (validators.Length - 1) / 3, validators);
             wallet.CreateAccount(CNContract);
 
             // Create TX
