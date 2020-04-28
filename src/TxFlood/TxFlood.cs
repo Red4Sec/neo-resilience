@@ -276,6 +276,8 @@ namespace Neo.Plugins
                 return false;
             }
 
+            if (!InitWallet()) return false;
+
             Interlocked.Exchange(ref _taskRun, 1);
             _task = Task.Run(() =>
             {
@@ -386,11 +388,8 @@ namespace Neo.Plugins
             return true;
         }
 
-        [ConsoleCommand("flood", Category = "Flood Commands")]
-        public bool Flood()
+        private bool Flood()
         {
-            if (!InitWallet()) return false;
-
             //var contract = UInt160.Parse(CONTRACT);
             Console.WriteLine();
 
