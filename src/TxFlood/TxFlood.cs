@@ -253,7 +253,7 @@ namespace Neo.Plugins
                     {
                         if (flag.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Launch();
+                            Launch(-1);
                         }
                         else
                         {
@@ -268,7 +268,7 @@ namespace Neo.Plugins
         }
 
         [ConsoleCommand("launch", Category = "Flood Commands")]
-        public bool Launch()
+        public bool Launch(int sleep = 0)
         {
             if (_task?.Status == TaskStatus.Running)
             {
@@ -283,7 +283,7 @@ namespace Neo.Plugins
             {
                 LogHelper.Debug("Start sender");
 
-                Thread.Sleep(SLEEP_START);
+                Thread.Sleep(sleep < 0 ? SLEEP_START : sleep);
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
