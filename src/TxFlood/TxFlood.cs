@@ -170,6 +170,7 @@ namespace Neo.Plugins
 
             _mintTransaction = mintTx;
             _mintReceived = false;
+
             //var send = new LocalNode.Relay { Inventory = _mintTransaction };
             var send = Activator.CreateInstance(_sendDirectlyType);
             _sendDirectlyField.SetValue(send, _mintTransaction);
@@ -224,20 +225,20 @@ namespace Neo.Plugins
 
         protected override void OnPluginsLoaded()
         {
+            if (Blockchain.Singleton.Height < 10)
+            {
+                try
+                {
+                    CreateMintTx();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("ERROR: " + e.ToString());
+                }
+            }
+
             new Task(() =>
             {
-                if (Blockchain.Singleton.Height < 10)
-                {
-                    try
-                    {
-                        CreateMintTx();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("ERROR: " + e.ToString());
-                    }
-                }
-
                 while (true)
                 {
                     EnvHelper.UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
@@ -283,7 +284,9 @@ namespace Neo.Plugins
             {
                 LogHelper.Debug("Start sender");
 
+                Console.WriteLine("Start sleeping: " + (int)sleep + "ms");
                 Thread.Sleep((int)sleep);
+                Console.WriteLine("Wait NEO for balance");
 
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
@@ -299,11 +302,15 @@ namespace Neo.Plugins
                     Thread.Sleep(1_000);
                 }
 
+                Console.WriteLine("Starting flood");
+
                 while (Interlocked.Read(ref _taskRun) == 1)
                 {
                     Flood();
                     Thread.Sleep(SLEEP_ROUND);
                 }
+
+                Console.WriteLine("Ending flood");
             });
 
             return _task.Status == TaskStatus.Running;
