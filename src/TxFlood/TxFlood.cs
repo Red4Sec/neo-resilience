@@ -123,6 +123,8 @@ namespace Neo.Plugins
             var CNContract = Contract.CreateMultiSigContract(validators.Length - (validators.Length - 1) / 3, validators);
             wallet.CreateAccount(CNContract);
 
+            Console.WriteLine($"Generated mint tx: from={CNContract.ScriptHash.ToAddress()} to={to.ToAddress()}");
+
             // Create TX
 
             var mintTx = wallet.MakeTransaction
@@ -133,7 +135,7 @@ namespace Neo.Plugins
                     {
                          AssetId = NEO.AssetId,
                          ScriptHash = to,
-                         Value = new BigDecimal(100_000_000, 0),
+                         Value = new BigDecimal(50_000_000, 0),
                     },
                     new TransferOutput()
                     {
@@ -219,20 +221,20 @@ namespace Neo.Plugins
 
         protected override void OnPluginsLoaded()
         {
-            if (Blockchain.Singleton.Height < 10)
-            {
-                try
-                {
-                    CreateMintTx();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("ERROR: " + e.ToString());
-                }
-            }
-
             new Task(() =>
             {
+                if (Blockchain.Singleton.Height < 10)
+                {
+                    try
+                    {
+                        CreateMintTx();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("ERROR: " + e.ToString());
+                    }
+                }
+
                 while (true)
                 {
                     EnvHelper.UpdateEnvVar(ref SLEEP_START, ENV_TASK_CONTROLLER + "_SLEEP_START");
@@ -317,7 +319,7 @@ namespace Neo.Plugins
         }
 
         [ConsoleCommand("balances", Category = "Flood Commands")]
-        private bool Balances(bool all)
+        private bool Balances(bool all = true)
         {
             if (!InitWallet()) return false;
 
