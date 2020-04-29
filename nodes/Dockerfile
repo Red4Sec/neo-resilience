@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/core/runtime:3.0-bionic
 
 LABEL maintainer="https://github.com/Red4Sec"
 
-
 ENV DEBIAN_FRONTEND noninteractive
 ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
 

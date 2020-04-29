@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/core/runtime:3.0-bionic
 
 LABEL maintainer="https://github.com/Red4Sec"
 
-ARG NEO_NODE_VERSION="3.0.0-preview1"
-ARG NEO_MODS_VERSION="3.0.0-preview1"
+ARG NEO_NODE_VERSION="3.0.0-preview2"
+ARG NEO_MODS_VERSION="3.0.0-preview2"
 
 ENV SLEEP_TX 0
 ENV DEBIAN_FRONTEND noninteractive
