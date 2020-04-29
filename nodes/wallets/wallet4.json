@@ -8,13 +8,13 @@
     },
     "accounts": [
         {
-            "address": "NRJ5doHgGHCcE2iudkXfPvqSBn627WDFSA",
+            "address": "NYavno4DdDUkVeRNcuhW2E86PLps7fCfK4",
             "label": null,
             "isDefault": false,
             "lock": false,
-            "key": "6PYWVSEjuDocG39zMVSv7SqoxXdFmuHsYHThbvy6soSXZoKKQpyBfaJARS",
+            "key": "6PYRaxu5KSk2PCimei3QViXXPjbZiJ1mPyCVEYQwhYhonzfmBjRwvhVrRP",
             "contract": {
-                "script": "DCEDhbt/VPDKMJbNJ3duhqUxWeOdSzWalB6gYho6GrYoxW4LQQqQatQ=",
+                "script": "DCEDhbt/VPDKMJbNJ3duhqUxWeOdSzWalB6gYho6GrYoxW4LQYprHnU=",
                 "parameters": [
                     {
                         "name": "signature",
