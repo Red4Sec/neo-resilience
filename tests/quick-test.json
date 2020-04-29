@@ -6,6 +6,7 @@
         "tx": false,
         "tx_round": 3000,
         "tx_sleep": 400,
+        "expected": 8,
         "phases":
         [
             {
@@ -21,6 +22,7 @@
         "tx": true,
         "tx_round": 1000,
         "tx_sleep": 100,
+        "expected": 8,
         "phases":
         [
             {
