@@ -38,7 +38,6 @@ namespace Neo.Plugins
         private long _taskRun = 0;
         private bool _distribute = false;
         private Transaction _mintTransaction = null;
-        private bool _mintReceived = false;
         private int SLEEP_START = 51_000;
         private int SLEEP_ROUND = 5_000;
         private int SLEEP_TX = 500;
@@ -169,7 +168,6 @@ namespace Neo.Plugins
             // Relay
 
             _mintTransaction = mintTx;
-            _mintReceived = false;
 
             //var send = new LocalNode.Relay { Inventory = _mintTransaction };
             var send = Activator.CreateInstance(_sendDirectlyType);
@@ -182,7 +180,7 @@ namespace Neo.Plugins
         {
             // Check if we need to watch the blocks
 
-            if (_mintReceived)
+            if (_mintTransaction == null)
             {
                 if (_distribute)
                 {
@@ -206,7 +204,6 @@ namespace Neo.Plugins
                     // Remove the watcher
 
                     _mintTransaction = null;
-                    _mintReceived = true;
 
                     // Send distribute
 
