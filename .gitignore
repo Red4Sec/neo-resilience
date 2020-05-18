@@ -437,12 +437,10 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-# Visual Code
-.vscode/
+# Generated Files
 
-
-# Custom
 output/
+nodes/shared-dir/*
 nodes/neo-cli/
 *.env
 build/*\.xml

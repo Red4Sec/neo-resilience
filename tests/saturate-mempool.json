@@ -1,0 +1,17 @@
+[
+    {
+        "name": "saturate-pool",
+        "desc": "Flood with tx until max mempool is reached.",
+        "start-delay": 300,
+        "tx": true,
+        "tx_round": 500,
+        "tx_sleep": 2,
+        "phases":
+        [
+            {
+                "duration": 25000,
+                "config": {}
+            }
+        ]
+    }
+]

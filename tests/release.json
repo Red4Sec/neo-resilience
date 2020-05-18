@@ -1,0 +1,655 @@
+[
+    {
+        "name": "release",
+        "desc": "Test release version.",
+        "start-delay": 60,
+        "tx": true,
+        "tx_round": 1000,
+        "tx_sleep": 50,
+        "expected": 756,
+        "phases":
+        [
+            {
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            },
+			{
+                "duration": 14400,
+                "config": {
+                    "node-1": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-2": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-3": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-4": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-5": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 1
+                    },
+                    "node-6": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    },
+                    "node-7": {
+                        "delay": [60, 200],
+                        "loss": [3, 15],
+                        "corrupt": 2
+                    }
+                }
+            },
+			{
+                "duration": 1800,
+                "config": {
+                    "node-1": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-2": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-3": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-4": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-5": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-6": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    },
+                    "node-7": {
+                        "delay": 0,
+                        "loss": 0,
+                        "corrupt": 0
+                    }
+                }
+            }
+        ]
+    }
+]
+

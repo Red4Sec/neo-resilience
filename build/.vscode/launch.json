@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "neo-resilience",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/neo-resilience.py",
+            "args": ["-t","tests/basic.json"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
