@@ -1,7 +1,6 @@
 using Akka.Actor;
 using Neo.ConsoleService;
 using Neo.IO;
-using Neo.IO.Json;
 using Neo.Ledger;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
@@ -111,7 +110,7 @@ namespace Neo.Plugins
 
             // Import all CN keys
 
-            var wallet = new NEP6Wallet(JObject.Parse("{\"name\":\"name\",\"version\":\"3.0\",\"scrypt\":{\"n\":0,\"r\":0,\"p\":0},\"accounts\":[],\"extra\":{}}"));
+            var wallet = new NEP6Wallet("");
             using var unlock = wallet.Unlock(WALLET_PASS);
 
             var cnWallets = Settings.Default.Wifs.Select(wif => wallet.Import(wif)).ToArray();
@@ -173,7 +172,6 @@ namespace Neo.Plugins
             var send = Activator.CreateInstance(_sendDirectlyType);
             _sendDirectlyField.SetValue(send, _mintTransaction);
             System.LocalNode.Tell(send);
-            System.LocalNode.Tell(new LocalNode.Relay() { Inventory = _mintTransaction });
         }
 
         public void OnCommit(StoreView snapshot)
@@ -259,7 +257,7 @@ namespace Neo.Plugins
                         }
                     }
 
-                    Thread.Sleep(5_000);
+                    Thread.Sleep(10_000);
                 }
             })
             .Start();
