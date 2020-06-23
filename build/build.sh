@@ -145,7 +145,7 @@ echo "   BUILD "
 echo "--------------------------------------------------------"
 dotnet publish /src/neo-node/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli -c $BUILD -r $TARGET
 dotnet publish /src/neo-modules/src/LevelDBStore/LevelDBStore.csproj -o LevelDBStore -c $BUILD -r $TARGET -f netstandard2.1
-#dotnet publish /src/neo-modules/src/RpcServer/RpcServer.csproj -o RpcServer -c $BUILD -r $TARGET -f netstandard2.1
+dotnet publish /src/neo-modules/src/RpcServer/RpcServer.csproj -o RpcServer -c $BUILD -r $TARGET -f netstandard2.1
 dotnet publish /src/neo-modules/src/SystemLog/SystemLog.csproj -o SystemLog -c $BUILD -r $TARGET -f netstandard2.1
 
 # Output binaries
@@ -158,6 +158,7 @@ if [[ -d "/src/neo-modules/src/LevelDBStore/bin/$BUILD/netstandard2.1/$TARGET/" 
 fi
 if [[ -d "/src/neo-modules/src/RpcServer/bin/$BUILD/netstandard2.1/$TARGET/" ]]; then
     mkdir -p /build/neo-cli/Plugins
+    cp /RpcServer/Microsoft.AspNetCore.ResponseCompression.dll /build/neo-cli
     mv /src/neo-modules/src/RpcServer/bin/$BUILD/netstandard2.1/$TARGET/* /build/neo-cli/Plugins
 fi
 if [[ -d "/src/neo-modules/src/SystemLog/bin/$BUILD/netstandard2.1/$TARGET/" ]]; then

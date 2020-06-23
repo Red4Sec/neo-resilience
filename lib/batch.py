@@ -60,7 +60,7 @@ class Batch(object):
                 print('     Error: {}'.format(e))
 
             try:
-                self.dc.copy2tar(node, '/opt/neo-cli/SystemLogs_00AEBED3/ConsensusService', node_logs)
+                self.dc.copy2tar(node, '/opt/neo-cli/Logs_00AEBED3/ConsensusService', node_logs)
             except FileNotFoundError:
                 print('     Logs not found for {}'.format(node))
             except BaseException as e:
