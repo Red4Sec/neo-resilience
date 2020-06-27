@@ -112,6 +112,8 @@ if [[ $PR_VM -ne 0 || $CODE_VM -eq 1 || $BRANCH_VM != "master" ]]; then
     dotnet add /src/neo/src/neo/neo.csproj reference /src/neo-vm/src/neo-vm/neo-vm.csproj
 fi
 
+cd /
+
 # Documentation
 if [[ $DOC_GEN -eq 1 ]]; then
     echo "--------------------------------------------------------"
@@ -131,7 +133,6 @@ if [[ -f "/analysis.xml" && $SC_ANA -eq 1 ]]; then
     echo "--------------------------------------------------------"
     echo "   ANALYSIS "
     echo "--------------------------------------------------------"
-    cd /
     dotnet sln /src/neo-node/neo-node.sln remove /src/neo-node/neo-gui/neo-gui.csproj
     dotnet tool install --global dotnet-sonarscanner
     dotnet-sonarscanner begin /k:"NEO" /s:"/analysis.xml"
@@ -146,7 +147,7 @@ echo "--------------------------------------------------------"
 dotnet publish /src/neo-node/neo-cli/neo-cli.csproj --verbosity normal -o neo-cli -c $BUILD -r $TARGET
 dotnet publish /src/neo-modules/src/LevelDBStore/LevelDBStore.csproj -o LevelDBStore -c $BUILD -r $TARGET -f netstandard2.1
 dotnet publish /src/neo-modules/src/RpcServer/RpcServer.csproj -o RpcServer -c $BUILD -r $TARGET -f netstandard2.1
-dotnet publish /src/neo-modules/src/SystemLog/SystemLog.csproj -o SystemLog -c $BUILD -r $TARGET -f netstandard2.1
+#dotnet publish /src/neo-modules/src/SystemLog/SystemLog.csproj -o SystemLog -c $BUILD -r $TARGET -f netstandard2.1
 
 # Output binaries
 if [[ -d "/src/neo-node/neo-cli/bin/$BUILD/netcoreapp3.0/$TARGET/" ]]; then

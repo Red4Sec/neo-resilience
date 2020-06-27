@@ -2,11 +2,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "neo-resilience",
+            "name": "Run",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/neo-resilience.py",
-            "args": ["-t","tests/basic.json"],
+            "args": [
+                "-t","tests/basic.json",
+                "--show-output"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run Skip-Build",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/neo-resilience.py",
+            "args": [
+                "-t","tests/basic.json",
+                "--show-output",
+                "--skip-build"
+            ],
             "console": "integratedTerminal"
         }
     ]
