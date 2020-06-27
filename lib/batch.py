@@ -49,30 +49,32 @@ class Batch(object):
         for node in nodes:
             node_stats = os.path.join(testdir, node + '_stats.json')
             node_logs = os.path.join(testdir, node + '_logs.tar')
+            blocks = 0
 
             try:
                 self.dc.copyfile(node, '/opt/neo-cli/stats.json', node_stats)
                 with open(node_stats) as f:
                     self.report.tests[test_name]['stats'][node] = json.load(f)
+                blocks = self.report.tests[test_name]['stats'][node][-1]['Index']
+                initial_block_count = self.report.tests[test_name]['stats'][node][0]['Index']
+                self.report.tests[test_name]['blocks'][node] = blocks - initial_block_count
             except FileNotFoundError:
                 print('     Stats not found for {}'.format(node))
             except BaseException as e:
                 print('     Error: {}'.format(e))
 
+            if not blocks:
+                print('     Getting node rpc height for {}'.format(node))
+                rpc_blocks = nodehelper.get_node_height(self.dc, node) - 1
+                self.report.tests[test_name]['blocks'][node] = rpc_blocks - initial_block_count
+
+            # Copy consensus logs
             try:
                 self.dc.copy2tar(node, '/opt/neo-cli/Logs_00AEBED3/ConsensusService', node_logs)
             except FileNotFoundError:
                 print('     Logs not found for {}'.format(node))
             except BaseException as e:
                 print('     Error: {}'.format(e))
-
-            blocks = 0
-            try:
-                blocks = self.report.tests[test_name]['stats'][node][-1]['Index']
-            except BaseException as e:
-                blocks = nodehelper.get_node_height(self.dc, node) - 1
-
-            self.report.tests[test_name]['blocks'][node] = blocks - initial_block_count
 
         if('expected' in test and test['expected'] > 0):
             min_block = min(self.report.tests[test_name]['blocks'].values())
