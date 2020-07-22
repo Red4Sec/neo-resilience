@@ -110,12 +110,18 @@ class DockerControl(object):
 
 
     def node_exec(self, node_name, cmd):
-        node = self.client.containers.get(node_name)
+        try:
+            node = self.client.containers.get(node_name)
+        except docker.errors.APIError:
+            return
         return node.exec_run(cmd) if node.status == 'running' else None
 
 
     def copyfile(self, node_name, org, dst):
-        node = self.client.containers.get(node_name)
+        try:
+            node = self.client.containers.get(node_name)
+        except docker.errors.APIError:
+            return False
         bits, _ = node.get_archive(org)
         stream = self.__generator_to_stream(bits)
         tar_file = tarfile.open(fileobj=stream, mode='r|*')
@@ -129,15 +135,21 @@ class DockerControl(object):
 
         tar_file.close()
         stream.close()
+        return True
 
 
     def copy2tar(self, node_name, org, dst):
-        node = self.client.containers.get(node_name)
-        bits, _ = node.get_archive(org)
+        try:
+            node = self.client.containers.get(node_name)
+        except docker.errors.APIError:
+            return False
 
+        bits, _ = node.get_archive(org)
         with open(dst, 'wb') as f:
             for chunk in bits:
                 f.write(chunk)
+
+        return True
 
 
     def __generator_to_stream(self, generator, buffer_size=io.DEFAULT_BUFFER_SIZE):

@@ -2,12 +2,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Process Attach",
+            "type": "python",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
             "name": "Run",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/neo-resilience.py",
             "args": [
-                "-t","tests/basic.json",
+                "--tests-file",
+                "tests/basic.json",
                 "--show-output"
             ],
             "console": "integratedTerminal"
@@ -18,7 +25,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/neo-resilience.py",
             "args": [
-                "-t","tests/basic.json",
+                "--tests-file",
+                "tests/basic.json",
                 "--show-output",
                 "--skip-build"
             ],
