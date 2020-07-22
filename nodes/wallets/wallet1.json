@@ -10,7 +10,7 @@
         {
             "address": "NU2mbT27mJCwWcQf8CKaw8JyFGUvC7rj5s",
             "label": null,
-            "isDefault": false,
+            "isdefault": false,
             "lock": false,
             "key": "6PYSpPvixPKCQLQfDrg4ZSzWN33qhh5RmBbAbSZf3H1GNkoPqE4ZW4ms93",
             "contract": {
