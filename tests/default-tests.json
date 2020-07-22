@@ -6,11 +6,11 @@
         "tx": true,
         "tx_round": 1000,
         "tx_sleep": 500,
-        "expected": 35,
+        "expected": 20,
         "phases":
         [
             {
-                "duration": 600,
+                "duration": 415,
                 "config": {}
             }
         ]
@@ -22,11 +22,11 @@
         "tx": true,
         "tx_round": 2000,
         "tx_sleep": 200,
-        "expected": 33,
+        "expected": 18,
         "phases":
         [
             {
-                "duration": 600,
+                "duration": 415,
                 "config": {
                     "node-1": {
                         "delay": [60, 200],
@@ -74,7 +74,7 @@
         "tx": true,
         "tx_round": 2000,
         "tx_sleep": 200,
-        "expected": 29,
+        "expected": 15,
         "phases":
         [
             {
@@ -118,7 +118,7 @@
                 }
             },
             {
-                "duration": 265,
+                "duration": 235,
                 "config": {
                     "node-3": {
                         "loss": 100,
@@ -131,7 +131,7 @@
                 }
             },
             {
-                "duration": 295,
+                "duration": 140,
                 "config": {
                     "node-3": {
                         "delay": [60, 200],
@@ -154,11 +154,11 @@
         "tx": true,
         "tx_round": 2000,
         "tx_sleep": 100,
-        "expected": 15,
+        "expected": 8,
         "phases":
         [
             {
-                "duration": 600,
+                "duration": 415,
                 "config": {
                     "node-1": {
                         "delay": [200, 500],
