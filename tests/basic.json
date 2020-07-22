@@ -10,7 +10,7 @@
         "phases":
         [
             {
-                "duration": 20,
+                "duration": 50,
                 "config": {}
             }
         ]
